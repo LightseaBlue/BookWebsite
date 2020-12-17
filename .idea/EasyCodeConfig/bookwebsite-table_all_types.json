@@ -1,0 +1,54 @@
+{
+  "name" : "TableAllTypes",
+  "preName" : "",
+  "comment" : "总类型表   ps:   音乐    图书",
+  "templateGroupName" : "LightseaBlueMp",
+  "fullColumn" : [ {
+    "name" : "allTypeId",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "custom" : false,
+    "ext" : { }
+  }, {
+    "name" : "allTypeName",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "custom" : false,
+    "ext" : { }
+  }, {
+    "name" : "allTypeImg",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "custom" : false,
+    "ext" : { }
+  }, {
+    "name" : "allTypeFounder",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "custom" : false,
+    "ext" : { }
+  }, {
+    "name" : "reserved1",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "custom" : false,
+    "ext" : { }
+  }, {
+    "name" : "reserved2",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "custom" : false,
+    "ext" : { }
+  } ],
+  "pkColumn" : null,
+  "otherColumn" : null,
+  "savePackageName" : "com.lightseablue.bookwebsite",
+  "savePath" : "./src/main/java/com/lightseablue/bookwebsite",
+  "saveModelName" : "bookwebsite"
+}
