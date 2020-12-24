@@ -1,8 +1,8 @@
 {
   "name" : "TableAudioManagement",
-  "preName" : null,
+  "preName" : "",
   "comment" : "音频管理表      音频地址   ",
-  "templateGroupName" : null,
+  "templateGroupName" : "MybatisPlus",
   "fullColumn" : [ {
     "name" : "audioId",
     "comment" : null,
@@ -11,7 +11,7 @@
     "custom" : false,
     "ext" : { }
   }, {
-    "name" : "bookId",
+    "name" : "audioNameId",
     "comment" : null,
     "type" : null,
     "shortType" : null,

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  * 用户表(TableUser)表服务实现类
  *
  * @author LightseaBlue
- * @since 2020-12-16 19:28:20
+ * @since 2020-12-24 17:26:30
  */
 @Service("tableUserService")
 public class TableUserServiceImpl extends ServiceImpl<TableUserDao, TableUser> implements TableUserService {

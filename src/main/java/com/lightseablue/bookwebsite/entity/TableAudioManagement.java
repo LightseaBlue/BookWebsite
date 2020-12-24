@@ -12,7 +12,7 @@ import java.util.Date;
  * 音频管理表      音频地址   (TableAudioManagement)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-16 22:29:56
+ * @since 2020-12-24 17:26:27
  */
 @Getter
 @Setter
@@ -22,12 +22,12 @@ import java.util.Date;
 @AllArgsConstructor
 @ApiModel(description = "信息类")
 public class TableAudioManagement extends Model<TableAudioManagement> implements Serializable {
-    private static final long serialVersionUID = 479982574706584519L;
+    private static final long serialVersionUID = 803641539006867676L;
 
     private Integer audioId;
 
     @ApiModelProperty("做外键   书籍/专辑id")
-    private Integer bookId;
+    private String audioNameId;
 
     @ApiModelProperty("用户id  做外键")
     private Integer uId;

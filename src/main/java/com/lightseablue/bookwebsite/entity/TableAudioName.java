@@ -11,7 +11,7 @@ import java.io.Serializable;
  * 书籍/专辑名名记录表   ps: 音乐:流行音乐:一个人(TableAudioName)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-16 22:29:58
+ * @since 2020-12-24 17:26:27
  */
 @Getter
 @Setter
@@ -21,9 +21,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ApiModel(description = "信息类")
 public class TableAudioName extends Model<TableAudioName> implements Serializable {
-    private static final long serialVersionUID = 769416380942067778L;
+    private static final long serialVersionUID = 649486314519793357L;
 
-    private Integer audioNameId;
+    private String audioNameId;
 
     @ApiModelProperty("大类型id   做外部关联")
     private Integer allTypeId;
@@ -36,6 +36,9 @@ public class TableAudioName extends Model<TableAudioName> implements Serializabl
 
     @ApiModelProperty("书籍/专辑简介")
     private String audioNameSummary;
+
+    @ApiModelProperty("书籍图片")
+    private String audioNameImg;
 
     @ApiModelProperty("书籍/专辑的作者")
     private String audioNameWriter;

@@ -7,7 +7,7 @@ import com.lightseablue.bookwebsite.entity.TableHistory;
  * 断点续听表(TableHistory)表数据库访问层
  *
  * @author LightseaBlue
- * @since 2020-12-16 19:28:15
+ * @since 2020-12-24 17:26:29
  */
 public interface TableHistoryDao extends BaseMapper<TableHistory> {
 

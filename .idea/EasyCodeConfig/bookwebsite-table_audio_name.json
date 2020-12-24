@@ -1,8 +1,8 @@
 {
   "name" : "TableAudioName",
-  "preName" : null,
+  "preName" : "",
   "comment" : "书籍/专辑名名记录表   ps: 音乐:流行音乐:一个人",
-  "templateGroupName" : null,
+  "templateGroupName" : "LightseaBlueMp",
   "fullColumn" : [ {
     "name" : "audioNameId",
     "comment" : null,
@@ -33,6 +33,13 @@
     "ext" : { }
   }, {
     "name" : "audioNameSummary",
+    "comment" : null,
+    "type" : null,
+    "shortType" : null,
+    "custom" : false,
+    "ext" : { }
+  }, {
+    "name" : "audioNameImg",
     "comment" : null,
     "type" : null,
     "shortType" : null,

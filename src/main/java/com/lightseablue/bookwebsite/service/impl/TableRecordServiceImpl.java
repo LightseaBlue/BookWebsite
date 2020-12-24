@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  * 记录用户行为(TableRecord)表服务实现类
  *
  * @author LightseaBlue
- * @since 2020-12-16 19:28:17
+ * @since 2020-12-24 17:26:29
  */
 @Service("tableRecordService")
 public class TableRecordServiceImpl extends ServiceImpl<TableRecordDao, TableRecord> implements TableRecordService {

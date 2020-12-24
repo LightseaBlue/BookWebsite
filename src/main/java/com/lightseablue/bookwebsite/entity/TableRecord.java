@@ -11,7 +11,7 @@ import java.io.Serializable;
  * 记录用户行为(TableRecord)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-16 22:30:02
+ * @since 2020-12-24 17:26:29
  */
 @Getter
 @Setter
@@ -21,7 +21,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ApiModel(description = "信息类")
 public class TableRecord extends Model<TableRecord> implements Serializable {
-    private static final long serialVersionUID = 972129478768860395L;
+    private static final long serialVersionUID = -75087477677680969L;
 
     private Integer rId;
 

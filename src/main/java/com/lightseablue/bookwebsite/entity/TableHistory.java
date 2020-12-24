@@ -11,7 +11,7 @@ import java.io.Serializable;
  * 断点续听表(TableHistory)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-16 22:30:01
+ * @since 2020-12-24 17:26:29
  */
 @Getter
 @Setter
@@ -21,7 +21,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ApiModel(description = "信息类")
 public class TableHistory extends Model<TableHistory> implements Serializable {
-    private static final long serialVersionUID = 228842510988316822L;
+    private static final long serialVersionUID = -16876642613723850L;
 
     private Integer hId;
 

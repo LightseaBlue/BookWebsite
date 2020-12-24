@@ -12,7 +12,7 @@ import java.util.Date;
  * 评论表(TableComment)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-16 22:30:00
+ * @since 2020-12-24 17:26:28
  */
 @Getter
 @Setter
@@ -22,7 +22,7 @@ import java.util.Date;
 @AllArgsConstructor
 @ApiModel(description = "信息类")
 public class TableComment extends Model<TableComment> implements Serializable {
-    private static final long serialVersionUID = -76936628335800819L;
+    private static final long serialVersionUID = 399523226075899584L;
 
     private Integer cId;
 

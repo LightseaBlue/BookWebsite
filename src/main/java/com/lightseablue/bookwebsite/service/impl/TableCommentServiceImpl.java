@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  * 评论表(TableComment)表服务实现类
  *
  * @author LightseaBlue
- * @since 2020-12-16 19:28:13
+ * @since 2020-12-24 17:26:29
  */
 @Service("tableCommentService")
 public class TableCommentServiceImpl extends ServiceImpl<TableCommentDao, TableComment> implements TableCommentService {
