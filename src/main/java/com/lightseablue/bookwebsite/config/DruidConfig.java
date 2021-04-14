@@ -11,16 +11,24 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 德鲁伊连接池配置类
+ *
+ * @ClassName: DruidConfig
+ * @Author: LightseaBlue
+ * @Date: 2021/1/15 9:42
+ * @Version: V1.0
+ */
 @Configuration
 public class DruidConfig {
 
     /**
-     *将自定义的 Druid数据源添加到容器中，不再让 Spring Boot 自动创建
-     *绑定全局配置文件中的 druid 数据源属性到 com.alibaba.druid.pool.DruidDataSource从而让它们生效
-     *@ConfigurationProperties(prefix = "spring.datasource")：作用就是将 全局配置文件中
-     *前缀为 spring.datasource的属性值注入到 com.alibaba.druid.pool.DruidDataSource 的同名参数中
+     * 将自定义的 Druid数据源添加到容器中，不再让 Spring Boot 自动创建
+     * 绑定全局配置文件中的 druid 数据源属性到 com.alibaba.druid.pool.DruidDataSource从而让它们生效
      *
      * @return
+     * @ConfigurationProperties(prefix = "spring.datasource")：作用就是将 全局配置文件中
+     * 前缀为 spring.datasource的属性值注入到 com.alibaba.druid.pool.DruidDataSource 的同名参数中
      */
     @ConfigurationProperties(prefix = "spring.datasource.druid")
     @Bean
@@ -30,7 +38,7 @@ public class DruidConfig {
 
 
     /**
-     *  配置 Druid 监控管理后台的Servlet；
+     * 配置 Druid 监控管理后台的Servlet；
      * 内置 Servlet 容器时没有web.xml文件，所以使用 Spring Boot 的注册 Servlet 方式
      */
     @Bean

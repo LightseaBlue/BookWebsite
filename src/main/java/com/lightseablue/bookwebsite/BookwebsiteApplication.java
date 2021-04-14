@@ -10,9 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @MapperScan("com.lightseablue.bookwebsite.dao")
 public class BookwebsiteApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(BookwebsiteApplication.class, args);
     }
-
 }

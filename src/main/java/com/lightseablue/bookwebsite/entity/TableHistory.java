@@ -1,6 +1,7 @@
 package com.lightseablue.bookwebsite.entity;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -11,7 +12,7 @@ import java.io.Serializable;
  * 断点续听表(TableHistory)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-24 17:26:29
+ * @since 2021-01-13 18:20:56
  */
 @Getter
 @Setter
@@ -19,9 +20,10 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "信息类")
+@ApiModel(description = "断点续听表")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TableHistory extends Model<TableHistory> implements Serializable {
-    private static final long serialVersionUID = -16876642613723850L;
+    private static final long serialVersionUID = 817972859152472338L;
 
     private Integer hId;
 

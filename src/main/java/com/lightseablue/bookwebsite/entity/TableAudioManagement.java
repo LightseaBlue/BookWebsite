@@ -1,6 +1,7 @@
 package com.lightseablue.bookwebsite.entity;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -12,7 +13,7 @@ import java.util.Date;
  * 音频管理表      音频地址   (TableAudioManagement)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-24 17:26:27
+ * @since 2021-01-13 18:20:53
  */
 @Getter
 @Setter
@@ -20,9 +21,10 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "信息类")
+@ApiModel(description = "音频管理表      音频地址   ")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TableAudioManagement extends Model<TableAudioManagement> implements Serializable {
-    private static final long serialVersionUID = 803641539006867676L;
+    private static final long serialVersionUID = -52476159987057952L;
 
     private Integer audioId;
 

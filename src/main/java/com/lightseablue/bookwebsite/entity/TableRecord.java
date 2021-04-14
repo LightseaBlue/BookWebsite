@@ -1,6 +1,7 @@
 package com.lightseablue.bookwebsite.entity;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -11,7 +12,7 @@ import java.io.Serializable;
  * 记录用户行为(TableRecord)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-24 17:26:29
+ * @since 2021-01-13 18:20:56
  */
 @Getter
 @Setter
@@ -19,9 +20,10 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "信息类")
+@ApiModel(description = "记录用户行为")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TableRecord extends Model<TableRecord> implements Serializable {
-    private static final long serialVersionUID = -75087477677680969L;
+    private static final long serialVersionUID = -81942259441544406L;
 
     private Integer rId;
 

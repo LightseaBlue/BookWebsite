@@ -28,3 +28,7 @@ spring:
   #配置文件声明
   profiles:
     active: dev
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

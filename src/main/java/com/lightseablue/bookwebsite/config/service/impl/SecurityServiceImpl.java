@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SecurityServiceImpl
+ * SecurityServiceImpl  自义定实现接口
  *
  * @author LightseaBlue
  * @since 2020-12-16 19:28:01

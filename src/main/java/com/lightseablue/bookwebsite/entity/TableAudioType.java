@@ -1,6 +1,7 @@
 package com.lightseablue.bookwebsite.entity;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -11,7 +12,7 @@ import java.io.Serializable;
  * 大类型下的小类型   ps:    音乐:流行音乐(TableAudioType)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-24 17:26:28
+ * @since 2021-01-13 18:20:54
  */
 @Getter
 @Setter
@@ -19,9 +20,10 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "信息类")
+@ApiModel(description = "大类型下的小类型   ps:    音乐:流行音乐")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TableAudioType extends Model<TableAudioType> implements Serializable {
-    private static final long serialVersionUID = -44865064423169310L;
+    private static final long serialVersionUID = 239731521491467668L;
 
     @ApiModelProperty("主键id ")
     private Integer audioTypeId;

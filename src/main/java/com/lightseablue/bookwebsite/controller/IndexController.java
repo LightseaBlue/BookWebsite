@@ -1,7 +1,7 @@
 package com.lightseablue.bookwebsite.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Program: bookwebsite
@@ -15,12 +15,14 @@ public class IndexController {
 
     @GetMapping({"/", "/index"})
     public String getIndex() {
-        return "index";
+        return "view/one";
     }
 
-    @GetMapping("/user")
-    public String getUser() {
-        return "/view/user";
+    @GetMapping("/user12")
+    @ResponseBody
+    public String getUser(String name) {
+        System.out.println("name"+name);
+        return "ok";
     }
 
     @GetMapping("/user2")

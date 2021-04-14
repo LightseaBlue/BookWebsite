@@ -14,6 +14,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.ArrayList;
 
 /**
+ * SwaggerUi配置类
+ *
  * @Program: bookwebsite
  * @ClassName: SwaggerConfig
  * @Author: LightseaBlue

@@ -1,6 +1,7 @@
 package com.lightseablue.bookwebsite.entity;
 
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -12,7 +13,7 @@ import java.util.Date;
  * 评论表(TableComment)实体类
  *
  * @author LightseaBlue
- * @since 2020-12-24 17:26:28
+ * @since 2021-01-13 18:20:55
  */
 @Getter
 @Setter
@@ -20,9 +21,10 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "信息类")
+@ApiModel(description = "评论表")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TableComment extends Model<TableComment> implements Serializable {
-    private static final long serialVersionUID = 399523226075899584L;
+    private static final long serialVersionUID = -77206880125409624L;
 
     private Integer cId;
 
