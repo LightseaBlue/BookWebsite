@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="view/Head :: Head">
+
+</head>
+<body>
+
+<!-- 头部滚动 -->
+<div class="mainbanner">
+    <div class="mainbanner_window">
+        <ul id="slideContainer">
+            <li><a href="#"><img height="500" th:src="@{bookImg/1.jpg}"
+                                 width="1920"/></a></li>
+            <li><a href="#"><img height="500" th:src="@{bookImg/2.jpg}"
+                                 width="1920"/></a></li>
+            <li><a href="#"><img height="500" th:src="@{bookImg/3.jpg}"
+                                 width="1920"/></a></li>
+            <li><a href="#"><img height="500" th:src="@{bookImg/4.jpg}"
+                                 width="1920"/></a></li>
+        </ul>
+    </div>
+    <ul class="mainbanner_list">
+        <li><a href="javascript:void(0);"></a></li>
+        <li><a href="javascript:void(0);"></a></li>
+        <li><a href="javascript:void(0);"></a></li>
+        <li><a href="javascript:void(0);"></a></li>
+    </ul>
+</div>
+
+<!-- 头部滚动结束 -->
+
+<!--中部开始-->
+<div class="con_sy">
+
+    <!--中部1开始-->
+
+    <div class="con_sy1">
+
+        <!--选项卡切换开始-->
+        <div class="xxk_sy">
+            <!--代码开始-->
+            <script>
+                <!--
+                /*第一种形式 第二种形式 更换显示样式*/
+                function setTab(name, cursel, n) {
+                    for (i = 1; i <= n; i++) {
+                        var menu = document.getElementById(name + i);
+                        var con = document.getElementById("con_" + name
+                            + "_" + i);
+                        menu.className = i == cursel ? "hover" : "";
+                        con.style.display = i == cursel ? "block" : "none";
+                    }
+                }
+
+                -->
+            </script>
+            <div id="Tab1">
+                <div class="Menubox">
+                    <ul th:each="item,memberStat:${bigTypes}">
+                        <li th:class="${memberStat.index eq 0}?'hover':''"
+                            th:id="${memberStat.index eq 0}?'one1':'one'+${memberStat.index+1 }"
+                            th:if="${memberStat.index<4}"
+                            th:onmouseover="${memberStat.index eq 0}?'setTab(\'one\',1,4)':'setTab(\'one\','+${memberStat.index+1}+',4)'"
+                            th:text="${item.allTypeName}">
+                        </li>
+                    </ul>
+                    <!--                    <a style="float: right; margin-right: 10px;cursor: pointer;">查看全部>></a>-->
+                </div>
+
+                <div class="Contentbox" id="bookInformation"></div>
+
+
+            </div>
+        </div>
+        <!--        选项卡结束-->
+
+        <!--猜你喜欢开始-->
+
+        <div class="jfdh_sy">
+            <div class="jfdh_bt">
+                猜你喜欢
+                <span id="changeYouLike" onclick="changeYouLike()"
+                      style="float: right; margin-right: 20px;cursor: pointer;">
+                    <img height="" src="img/Refresh.png" width="">
+                    换一换
+                </span>
+            </div>
+
+            <div id="youLike">
+                <div class="jfdh1" th:each="item:${youLikesOrTops}">
+                    <div class="jflp2">
+                        <a href="javascript:void(0)"><img height="66"
+                                                          th:onclick="playMusic([[${item.audioNameId}]])"
+                                                          th:src="${item.audioNameImg }" width="66"/></a>
+                    </div>
+                    <div class="jflp3">
+                        [(${item.audioNameName})] <br/> 播讲：[(${item.UName})]<br/> <a href="#">查看详情</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--猜你喜欢结束-->
+    </div>
+    <!--    开始各类型书籍展示  -->
+    <!--    <c:forEach items="${allBigtype }" var="item" varStatus="i">-->
+
+    <div class="con_dm" th:each="item,i:${bigTypes}">
+        <div class="con_dmbt">
+            <span class="dt2_2" th:text="${item.allTypeName}"></span> <span
+                class="dt2_3"> <a
+                th:href="'/booksList?allTypeId='+${item.allTypeId}+'&thisPage=1&allTypeName='+${item.allTypeName}">查看更多>></a>
+					</span>
+        </div>
+
+
+        <div style="font-size: 22px; margin-top: 8px; width: 235px; height: 23px; text-align: center;"
+             th:text="${item.allTypeName}+'排行榜'">
+            <!--                ${item.btname }排行榜-->
+        </div>
+        <div class="con2_dtk">
+
+            <!--左侧开始-->
+
+            <div class="con2_zc">
+                <div th:id="'wrap'+${i.index+1}">
+                    <ul>
+                        <li th:each="item1,j:${allTopBooks[i.index] }">
+                            <h2>
+                                <span class="szmc" th:text="${item1.audioNameName}"></span>
+                            </h2>
+                            <a href="javascript:void (0)">
+                                <div class="movielist">
+                                    <img th:onclick="playMusic([[${item1.audioNameId}]])"
+                                         th:src="${item1.audioNameImg }"/>
+                                    <dl>
+                                        <dt th:text="${item1.audioNameName}"></dt>
+                                        <dd>
+                                            <span style="font-size: 5px" th:text="演播+'：'+${item1.UName }"></span>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+            <!--左侧1结束-->
+
+            <!--右侧开始-->
+            <div class="con2_yc">
+                <div class="hdpic">
+                    <dl>
+
+                        <!--                        <c:forEach items="${allBook[i.index] }" var="item2">-->
+                        <dd th:each="item2:${allBooks[i.index]}">
+                            <a href="javascript:void(0) ">
+                                <img height="278" th:src="${item2.audioNameImg}" width="184"/>
+                                <div class="pictitle" style="height:278px; width: 184px">
+                                    <div class="zz">
+                                        <span style="color: white;" th:text="${item2.audioNameName}"></span><br/>
+                                        <span style="color: white; z-index:999; font-size: 18px;"
+                                              th:text="演播+'：'+${item2.UName }"></span>
+                                        <img src="img/play.png"
+                                             style="height: 50px;width: 50px; background: white;border-radius: 45px;  position: absolute; bottom: 30px; "
+                                             th:id="'yonPlay'+${item2.audioNameId}"
+                                             th:onclick="playMusic([[${item2.audioNameId}]])">
+                                    </div>
+                                </div>
+                                <div class="picshine">
+                                </div>
+                            </a>
+                        </dd>
+
+                        <!--                        </c:forEach>-->
+
+                    </dl>
+                </div>
+            </div>
+            <!--右侧结束-->
+        </div>
+    </div>
+    <!--中部结束-->
+    <!--    </c:forEach>-->
+
+</div>
+<!--中部结束-->
+<script th:inline="javascript">
+    //主页信息拼接
+    $(function () {
+        var content = '';
+        let items = [[${allTypes}]];
+        for (var i = 0; i < items.length; i++) {
+            if (i === 0) {
+                content += '<div id="con_one_1" className="hover" style="width: 972px;height: 276px">';
+            } else {
+                var num = i + 1;
+                content += '<div id="con_one_' + num + '" style="display: none; width: 972px;height: 276px">';
+            }
+            // console.log(items[i].length);
+
+            for (var j = 0; j < items[i].length; j++) {
+                var audioTypeName = items[i][j].audioTypeName;
+                if (j % 5 === 0) {
+                    content += '<ul style=" float: left; margin-left: 10px; margin-right: 30px">';
+                }
+                content += '<li style="font-size: 35px;margin-bottom: 10px;margin-left: 10px;margin-top: 5px;cursor: pointer;">' +
+                    '<a href="/bookTypeList?thisPage=1&audioTypeId=' +
+                    items[i][j].audioTypeId +
+                    '&allTypeName=' +
+                    items[i][j].audioTypeName +
+                    '">' +
+                    audioTypeName +
+                    '</a>' +
+                    '</li>';
+                if (j % 5 === 4 || j === items[i].length - 1) {
+                    content += '</ul>';
+                }
+            }
+            var typeImg = [[${bigTypes}]][i].allTypeImg;
+            content += '<img src="' + typeImg +
+                '" style="height: 267px; width: 446px;right: 587px; position: absolute; clear: both">' +
+                '</div>';
+        }
+        // console.log(content)
+        document.getElementById("bookInformation").innerHTML = content;
+    });
+
+    //滚动音频列表
+    $("#gdt").scroll(function () {
+        var viewH = $(this).height(),//可见高度
+            contentH = $(this).get(0).scrollHeight,//内容高度
+            scrollTop = $(this).scrollTop();//滚动高度
+        if (contentH - viewH - scrollTop <= 0) { //到达底部100px时,加载新内容
+            // if(scrollTop/(contentH -viewH)>=0.95){ //到达底部100px时,加载新内容
+            // if(scrollTop == (contentH -viewH)){
+            var audioNameId = $('#music').attr("audioNameId");
+            var thisPage = $('.listMusic').attr("page");
+            $.get("playMusic/findMusicList", {
+                audioNameId: audioNameId,
+                thisPage: thisPage
+            }, function (data) {
+                console.log(data);
+                if (data == null) {
+                    return;
+                } else {
+                    appendList(data);
+                }
+            })
+        }
+    });
+
+    //切换推荐
+    function changeYouLike() {
+        $.get("tableAudioName/changeYouLike", {}, function (data) {
+            $('#youLike').html("");
+            for (var i = 0; i < data.length; i++) {
+                $('#youLike').append(
+                    "<div class=\"jfdh1\">\n" +
+                    "<div class=\"jflp2\">\n" +
+                    "    <a href=\"javascript:void(0)\"><img src=\"" + data[i].audioNameImg + "\"  onclick=\"playMusic(" + data[i].audioNameId + ")\" width=\"66\" height=\"66\"/></a>\n" +
+                    "</div>\n" +
+                    "<div class=\"jflp3\">\n" +
+                    data[i].audioNameName + "<br/> 播讲：" + data[i].uname + "<br/> <a href=\"#\">查看详情</a>\n" +
+                    "</div>\n" +
+                    "</div>"
+                )
+            }
+        });
+    }
+
+    function switchMusic(audioNameId, audioId) {
+        $.get("playMusic/switchMusic", {
+            audioNameId: audioNameId,
+            audioId: audioId
+        }, function (data) {
+            setSrc(data);
+        });
+    }
+
+    function setSrc(data) {
+        $('.listMusic').css("background", "");
+        $("#list" + data.audioId).css("background", "url(images/nav-bg.jpg)");
+        $('#music').attr("src", data.audioAddress);
+        $('#nextMusic').attr("onclick", "switchMusic(" + data.audioNameId + "," + data.nextAudioId + ")");
+        $('#precMusic').attr("onclick", "switchMusic(" + data.audioNameId + "," + data.preAudioId + ")");
+    }
+
+    function appendList(data) {
+        var num = data.thisPage * 10 - 9;
+        for (var i = 0; i < data.list.length; i++) {
+            if (i % 2 == 0) {
+                $('#listShow').append('<hr><li class="listMusic" id="list' + data.list[i].audioId + '" style="font-size: 25px; color: cornflowerblue;" >' +
+                    '<a href="javascript:switchMusic(' + data.list[i].audioNameId + ',' + data.list[i].audioId + ')" ' +
+                    'style="color: cornflowerblue;">' + (i + num) + '.&nbsp' + data.list[i].audioName + '</a>' +
+                    // '<span style="float: left">' +
+                    // data.list[i].date +
+                    // '</span>' +
+                    '</li>');
+            } else {
+                $('#listShow').append('<hr><li class="listMusic" id="list' + data.list[i].audioId + '" style="font-size: 25px; color: #ff69b4;">' +
+                    '<a href="javascript:switchMusic(' + data.list[i].audioNameId + ',' + data.list[i].audioId + ')" ' +
+                    'style="color: hotpink;">' + (i + num) + '.&nbsp' + data.list[i].audioName + '</a>' +
+                    '</li>');
+            }
+        }
+        $('.listMusic').attr("page", data.thisPage);
+    }
+
+    function playMusic(audioNameId) {
+        //是否是同一个音频
+        var ispause = $('#music').attr("audioId");
+        $.get("playMusic/play", {
+            audioNameId: audioNameId
+        }, function (data) {
+            if (ispause === data.audioId) {
+                if ($('#music')[0].paused) {
+                    $('#music')[0].play();
+                    $('#yonPlay' + audioNameId).attr("src", "img/stop.png");
+                } else {
+                    $('#music')[0].pause();
+                    // $('#yonPlay'+audioId).attr("src","img/play.png");
+                }
+            } else {
+                $('#yonPlay' + ispause).attr("src", "img/play.png");
+                $('#music').attr("onpause", "isSleep(" + data.audioNameId + ")");
+                $('#music').attr("onplay", "isPlay(" + data.audioNameId + ")");
+                $('#playimg').attr("src", data.audioNameImg);
+                $('#music').attr("audioNameId", data.audioNameId);
+                $('#yonPlay' + audioNameId).attr("src", "img/stop.png");
+
+                $('#listShow').html('');
+                appendList(data);
+
+                setSrc(data);
+            }
+        });
+    }
+</script>
+
+
+</body>
+</html>

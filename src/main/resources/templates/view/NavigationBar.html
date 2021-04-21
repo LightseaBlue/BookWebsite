@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec=“http://www.thymeleaf.org/extras/spring-security”
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body th:fragment="Top">
+<div class="main-navigation"
+     style="margin:0;padding:0; margin-left: 351px; list-style-type:none;font-family:Arial, LucidaGrande, Lucida Sans, Arial;color:#FFFFFF">
+    <ul>
+        <li><a href="/">首页</a></li>
+        <li>
+            <a href="">发现</a>
+            <ul>
+                <li>
+                    <a href="/booksList?allTypeId=1&amp;thisPage=1&amp;allTypeName=音乐">音乐</a></li>
+                <li>
+                    <a href="/booksList?allTypeId=2&amp;thisPage=1&amp;allTypeName=有声书">有声书</a></li>
+                <li>
+                    <a href="/booksList?allTypeId=3&amp;thisPage=1&amp;allTypeName=教育">教育</a></li>
+                <li>
+                    <a href="/booksList?allTypeId=4&amp;thisPage=1&amp;allTypeName=儿童">儿童</a></li>
+                <li>
+                    <a href="/booksList?allTypeId=5&amp;thisPage=1&amp;allTypeName=知识">知识</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">我的</a>
+            <ul>
+                <li><a href="#">Sub Menu Item 1</a></li>
+                <li><a href="#">Sub Menu Item 2</a></li>
+                <li><a href="http://www.lanrenzhijia.com">Sub Menu Item 3</a></li>
+                <li><a href="#">Sub Menu Item 4</a></li>
+                <li><a href="#">Sub Menu Item 5</a></li>
+            </ul>
+        </li>
+        <!--        判断是否存在user-->
+        <li sec:authorize="!isAuthenticated()">
+            <a href="/login">
+                登陆
+            </a>
+        </li>
+        <li sec:authorize="isAuthenticated()">
+            <a href="logout()">
+                <form enctype="application/x-www-form-urlencoded" method="post" th:action="@{/logout}">
+                    <input type="submit" value="注销">
+                </form>
+            </a>
+        </li>
+    </ul>
+    <div class="search">
+        <input class="search-input" name="search" type="text"/>
+        <input class="search-btn" name="search" type="submit" value=""/>
+    </div>
+
+    <script type="text/javascript">
+        function logout() {
+            $.post("/logout");
+        }
+
+        $(document).ready(function () {
+
+            $(".main-navigation li").hover(function () {
+                var itemwidth = $(this).width(); /* Getting the LI width */
+                $(this).prepend("<div class='hover'></div>"); /* Inserting a blank div into within li above the <a> tag*/
+                $(this).find("div").fadeIn('10000').css({'width': itemwidth}); /* Using the itemwidth for the div to display properly*/
+                $(this).find("ul").fadeIn('1000').slideDown('10000').css("display", "block");
+
+            }, function () {
+                $(this).find("div").slideUp('1000').fadeOut('1000');/* sliding up and fading out the hover div */
+                $(this).find("div").remove();/* removing the <div> code from html at every mouseout event*/
+                $(this).find("ul").fadeOut('1000'); /* fading out the sub menu */
+
+            });
+
+            $(".search-input").focus(function () {
+                $(this).animate({width: '180px'}, 500); /* on focus, increasing the input width of search to left side*/
+            });
+
+            $(".search-input").focusout(function () {
+                $(this).animate({width: '117px'}, 500);  /* on focus, decreasing the input width of search to left side*/
+            });
+
+        });
+    </script>
+</div><!--main-navigation end-->
+
+
+</body>
+</html>

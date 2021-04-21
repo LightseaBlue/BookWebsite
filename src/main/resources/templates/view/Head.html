@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="Head">
+    <meta charset="UTF-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <title>记得改</title>
+    <!--   页面图标 -->
+    <link rel="icon" th:href="@{images/favicon.ico}">
+    <!-- 主页 -->
+    <script th:src="@{js/jquery-1.10.1.min.js}" type="text/javascript"></script>
+    <script th:src="@{js/index.js}" type="text/javascript"></script>
+    <link rel="stylesheet" th:href="@{css/main.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{css/basic.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{css/style.css}" type="text/css"/>
+    <!--    booksList-->
+    <!--    <script th:src="@{script/global.js}" type="text/javascript"></script>-->
+    <!--    <script src="script/head.js" type="text/javascript"></script>-->
+    <!--    <link rel="stylesheet" href="style/base.css"/>-->
+    <!--    <link rel="stylesheet" href="style/head.css"/>-->
+    <!--	导航栏    -->
+    <link rel="stylesheet" th:href="@{css/top.css}" type="text/css"/>
+    <th:block th:include="view/NavigationBar :: Top"/>
+
+    <!--    背景-->
+    <script th:src="@{js/backgroundScript.js}"></script>
+    <th:block th:include="view/Background :: Background"/>
+
+
+    <!--    播放器 -->
+    <th:block th:include="view/Player :: Player"/>
+
+
+</head>
+<body>
+
+</body>
+</html>
