@@ -1,14 +1,26 @@
 package com.lightseablue.bookwebsite;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.lightseablue.bookwebsite.entity.TableAllTypes;
+import com.lightseablue.bookwebsite.reptile.service.impl.XmlyReptile;
+import com.lightseablue.bookwebsite.service.TableAllTypesService;
+import com.lightseablue.bookwebsite.service.TableAudioNameService;
+import com.lightseablue.bookwebsite.utils.RedisUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -18,6 +30,7 @@ class BookwebsiteApplicationTests {
 
     @Autowired
     XmlyReptile xmlyReptile;
+
     @Test
     public void contextLoads() throws SQLException, SQLException, IOException, InterruptedException {
 //        TableUser tableUser = tableUserService.getOne(new QueryWrapper<TableUser>().lambda().eq(TableUser::getUName, "LightseaBlue"));
@@ -60,31 +73,43 @@ class BookwebsiteApplicationTests {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    TableAllTypesService service;
+    @Autowired
+    TableAudioNameService tableAudioNameService;
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Test
     public void testRedis() throws JsonProcessingException {
         TableAllTypes tableAllTypesBuilder = TableAllTypes.builder().allTypeId(1).build();
 
         String s = new ObjectMapper().writeValueAsString(tableAllTypesBuilder);
-        redisTemplate.opsForValue().set("mdy",s);
+        redisTemplate.opsForValue().set("mdy", s);
         System.out.println(redisTemplate.opsForValue().get("mdy"));
     }
 
-    @Autowired
-    private RedisUtil redisUtil;
     @Test
     public void testSpringBootRedis() throws JsonProcessingException {
         TableAllTypes tableAllTypes = TableAllTypes.builder().allTypeId(1).build();
 
-        boolean test = redisUtil.hset("test","mdy", tableAllTypes);
+        boolean test = redisUtil.hset("test", "mdy", tableAllTypes);
         System.out.println(test);
         TableAllTypes hget = (TableAllTypes) redisUtil.hget("test", "mdy");
         System.out.println(hget);
     }
 
     @Test
-    public void testUrl(){
-        String a="/";
-        File f=new File(a);
-        System.out.println(f.getAbsolutePath());
+    public void testUrl() throws IOException {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        //加密方法
+        String a = encoder.encode("a");
+        System.out.println(a);
+    }
+
+    @Test
+    public void testMybatisPlus() {
+        tableAudioNameService.findAllTopBook(2);
     }
 }

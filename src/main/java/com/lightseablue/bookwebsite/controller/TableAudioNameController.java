@@ -2,15 +2,23 @@ package com.lightseablue.bookwebsite.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.ApiController;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lightseablue.bookwebsite.dto.TableAudioNameDTO;
 import com.lightseablue.bookwebsite.entity.TableAudioName;
+import com.lightseablue.bookwebsite.entity.TableUser;
 import com.lightseablue.bookwebsite.service.TableAudioNameService;
+import com.lightseablue.bookwebsite.service.TableUserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,13 +28,60 @@ import java.util.List;
  * @since 2020-12-24 17:26:27
  */
 @RestController
-@RequestMapping("tableAudioName")
+@RequestMapping("/tableAudioName")
 public class TableAudioNameController extends ApiController {
     /**
      * 服务对象
      */
     @Resource
     private TableAudioNameService tableAudioNameService;
+
+    /**
+     * 切换你的喜欢
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("/changeYouLike")
+    public List<TableAudioNameDTO> changeYouLike(HttpServletRequest request) {
+        int thisNum = Integer.parseInt(request.getSession().getAttribute("thisNum").toString());
+        //查找全部排行榜的页数
+        Object thisNum1 = request.getSession().getAttribute("allTopBooksNum");
+        int allTopBooksNum = 1;
+        if (thisNum1 != null) {
+            allTopBooksNum = Integer.parseInt(request.getSession().getAttribute("allTopBooksNum").toString());
+        }
+
+        if (thisNum <= 8) {
+            thisNum++;
+        } else {
+            thisNum = 1;
+            allTopBooksNum = 1;
+        }
+        TableUser user = (TableUser) request.getSession().getAttribute("user");
+        List<TableAudioNameDTO> youLike;
+
+        if (user != null) {
+            youLike = tableAudioNameService.getYouLike(user.getUId(), thisNum);
+            if (youLike == null) {
+                youLike = tableAudioNameService.findAllTopBook(thisNum);
+            }
+        } else {
+            youLike = tableAudioNameService.findAllTopBook(thisNum);
+        }
+
+        if (youLike.size() < 3) {
+            for (int j = youLike.size(); j < 3; j++) {
+                youLike.add(tableAudioNameService.findAllTopBook(allTopBooksNum).get(j));
+                allTopBooksNum++;
+            }
+        }
+        //喜欢轮数
+        request.getSession().setAttribute("thisNum", thisNum);
+        //所有排行榜轮数
+        request.getSession().setAttribute("allTopBooksNum", allTopBooksNum);
+        return youLike;
+    }
 
     /**
      * 分页查询所有数据

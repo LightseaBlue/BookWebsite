@@ -22,11 +22,13 @@ import java.util.List;
 @RestController
 @RequestMapping("tableUser")
 public class TableUserController extends ApiController {
+
     /**
      * 服务对象
      */
     @Resource
     private TableUserService tableUserService;
+
 
     /**
      * 分页查询所有数据

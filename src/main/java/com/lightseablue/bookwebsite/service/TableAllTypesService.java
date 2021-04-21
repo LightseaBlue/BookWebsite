@@ -2,6 +2,7 @@ package com.lightseablue.bookwebsite.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lightseablue.bookwebsite.entity.TableAllTypes;
+import org.apache.ibatis.annotations.CacheNamespace;
 
 /**
  * 总类型表   ps:   音乐    图书(TableAllTypes)表服务接口

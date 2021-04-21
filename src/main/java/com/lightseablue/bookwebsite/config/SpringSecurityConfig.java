@@ -38,13 +38,22 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/user").authenticated()
-                .antMatchers("/user2").hasRole("vip");
-
-        http.formLogin().permitAll();
-        http.rememberMe();
-        http.logout().permitAll();
+                .antMatchers("/login").permitAll()
+                .antMatchers("/").hasRole("vip")
+                .antMatchers("/index").hasRole("vip");
+        //post  404问题
+//        http.csrf().disable();
+        //定制登陆页
+        http.formLogin()
+                .loginPage("/login")      // 设置登录页面
+                .loginProcessingUrl("/login")  //登陆的接口  请求名
+                .usernameParameter("userName")
+                .passwordParameter("passWord")
+                .successForwardUrl("/")
+        ;
+        http.rememberMe().rememberMeParameter("checkBox");
+        // .logoutSuccessUrl("/"); 注销成功来到首页
+        http.logout().logoutSuccessUrl("/login");
     }
 
     /**

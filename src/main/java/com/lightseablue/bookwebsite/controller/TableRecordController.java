@@ -16,8 +16,8 @@ import java.util.List;
 /**
  * 记录用户行为(TableRecord)表控制层
  *
- * @author LightseaBlue
- * @since 2020-12-24 17:26:29
+ * @author makejava
+ * @since 2021-04-17 15:46:25
  */
 @RestController
 @RequestMapping("tableRecord")

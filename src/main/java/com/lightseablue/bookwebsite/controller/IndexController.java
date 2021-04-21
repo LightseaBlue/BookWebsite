@@ -1,7 +1,26 @@
 package com.lightseablue.bookwebsite.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lightseablue.bookwebsite.dto.TableAudioNameDTO;
+import com.lightseablue.bookwebsite.entity.TableAllTypes;
+import com.lightseablue.bookwebsite.entity.TableAudioName;
+import com.lightseablue.bookwebsite.entity.TableAudioType;
+import com.lightseablue.bookwebsite.entity.TableUser;
+import com.lightseablue.bookwebsite.service.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Program: bookwebsite
@@ -11,27 +30,114 @@ import org.springframework.web.bind.annotation.*;
  * @Version: V1.0
  */
 @Controller
+@Api("主页控制器")
 public class IndexController {
+    @Autowired
+    TableAllTypesService tableAllTypesService;
+    @Autowired
+    TableAudioTypeService tableAudioTypeService;
+    @Autowired
+    TableAudioNameService tableAudioNameService;
+    @Autowired
+    TableAudioManagementService tableAudioManagementService;
+    @Autowired
+    RedisService redisService;
+    @Autowired
+    TableUserService tableUserService;
 
-    @GetMapping({"/", "/index"})
-    public String getIndex() {
-        return "view/one";
+    @ApiOperation("主页加载")
+    @RequestMapping({"/", "/index"})
+    public ModelAndView getIndex(HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView();
+        // 所有大类型和小类型
+        List<TableAllTypes> allTypes = tableAllTypesService.list();
+        List<List<TableAudioType>> allAudioTypes = new ArrayList<>();
+        if (allTypes != null) {
+            for (int i = 0; i < 4; i++) {
+                allAudioTypes.add(tableAudioTypeService.getTableAudioTypes(allTypes.get(i).getAllTypeId()));
+            }
+        }
+        // 喜欢或者推荐
+        HttpSession session = request.getSession();
+        TableUser user = (TableUser) session.getAttribute("user");
+        List<TableAudioNameDTO> youLikesOrTops;
+        if (user != null) {
+            youLikesOrTops = tableAudioNameService.getYouLike(user.getUId(), 1);
+            if (youLikesOrTops == null) {
+                youLikesOrTops = tableAudioNameService.findAllTopBook(1);
+            }
+        } else {
+            youLikesOrTops = tableAudioNameService.findAllTopBook(1);
+        }
+        // 所有大类型的排行榜
+        List<List<TableAudioNameDTO>> allTopBooks = new ArrayList<>();
+        // 所有展示书籍
+        List<List<TableAudioNameDTO>> allBooks = new ArrayList<>();
+        assert allTypes != null;
+        for (TableAllTypes b : allTypes) {
+            QueryWrapper<TableAudioName> tableAudioNameQueryWrapper = new QueryWrapper<>();
+            tableAudioNameQueryWrapper.lambda().eq(TableAudioName::getAllTypeId, b.getAllTypeId());
+            allTopBooks.add(tableAudioNameService.searchTopBookByType(b.getAllTypeId()));
+            allBooks.add(tableAudioNameService.searchBooksByType(b.getAllTypeId()));
+        }
+
+        //所有大类型和小类型
+        modelAndView.addObject("bigTypes", allTypes);
+        modelAndView.addObject("allTypes", allAudioTypes);
+        //推荐喜欢或者排行榜
+        modelAndView.addObject("youLikesOrTops", youLikesOrTops);
+        modelAndView.addObject("allTopBooks", allTopBooks);
+        //每一个大类型中最新的5本书
+        modelAndView.addObject("allBooks", allBooks);
+        //猜你喜欢的页数
+        session.setAttribute("thisNum", 1);
+
+        modelAndView.setViewName("view/index");
+        return modelAndView;
     }
 
-    @GetMapping("/user12")
-    @ResponseBody
-    public String getUser(String name) {
-        System.out.println("name"+name);
-        return "ok";
+    /**
+     * 跳转类型展示界面
+     *
+     * @return
+     */
+    @GetMapping("/booksList")
+    public ModelAndView toBooksList(Integer allTypeId, Integer thisPage, String allTypeName) {
+        Page<TableAudioName> tableAudioNamePage = tableAudioNameService.searchAllBooksByType(allTypeId, thisPage);
+        return setBookListResParam(tableAudioNamePage, thisPage, allTypeName);
     }
 
-    @GetMapping("/user2")
-    public String getUser2() {
-        return "/view/user2";
+    /**
+     * 跳转小类型展示界面
+     *
+     * @param audioTypeId
+     * @param thisPage
+     * @param allTypeName
+     * @return
+     */
+    @GetMapping("/bookTypeList")
+    public ModelAndView toBooksNameList(Integer audioTypeId, Integer thisPage, String allTypeName) {
+        Page<TableAudioName> tableAudioNamePage = tableAudioNameService.searchAllBooksByAudioTypeId(audioTypeId, thisPage);
+        return setBookListResParam(tableAudioNamePage, thisPage, allTypeName);
     }
 
-//    @GetMapping("/login")
-//    public String getLogin(){
-//        return "";
-//    }
+    private ModelAndView setBookListResParam(IPage<TableAudioName> tableAudioNamePage, Integer thisPage, String allTypeName) {
+        ModelAndView modelAndView = new ModelAndView();
+        List<TableAudioNameDTO> tableAudioNameDtoS = tableAudioNameService.pageToList(tableAudioNamePage);
+        modelAndView.addObject("bookLists", tableAudioNameDtoS);
+        modelAndView.addObject("thisPage", thisPage + 1);
+        modelAndView.addObject("allPages", tableAudioNamePage.getPages());
+        modelAndView.addObject("allBookNum", tableAudioNamePage.getTotal());
+        modelAndView.addObject("allTypeName", allTypeName);
+        modelAndView.addObject("allTypeId", tableAudioNameDtoS.get(0).getAllTypeId());
+        modelAndView.addObject("prePage", thisPage - 1);
+        modelAndView.setViewName("view/booksList");
+        return modelAndView;
+    }
+
+
+    @GetMapping("/login")
+    public String toLogin() {
+        return "view/login";
+    }
 }
