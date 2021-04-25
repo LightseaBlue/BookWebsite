@@ -11,28 +11,22 @@
     <ul>
         <li><a href="/">首页</a></li>
         <li>
-            <a href="">发现</a>
+            <a href="#">发现</a>
             <ul>
-                <li>
-                    <a href="/booksList?allTypeId=1&amp;thisPage=1&amp;allTypeName=音乐">音乐</a></li>
-                <li>
-                    <a href="/booksList?allTypeId=2&amp;thisPage=1&amp;allTypeName=有声书">有声书</a></li>
-                <li>
-                    <a href="/booksList?allTypeId=3&amp;thisPage=1&amp;allTypeName=教育">教育</a></li>
-                <li>
-                    <a href="/booksList?allTypeId=4&amp;thisPage=1&amp;allTypeName=儿童">儿童</a></li>
-                <li>
-                    <a href="/booksList?allTypeId=5&amp;thisPage=1&amp;allTypeName=知识">知识</a></li>
+                <li th:each="item:${bigTypes}">
+                    <a th:href="'/booksList?allTypeId='+${item.allTypeId}+'&thisPage=1&allTypeName='+${item.allTypeName}"
+                       th:text="${item.allTypeName}">音乐</a>
+                </li>
+
             </ul>
         </li>
         <li>
-            <a href="#">我的</a>
-            <ul>
-                <li><a href="#">Sub Menu Item 1</a></li>
-                <li><a href="#">Sub Menu Item 2</a></li>
-                <li><a href="http://www.lanrenzhijia.com">Sub Menu Item 3</a></li>
-                <li><a href="#">Sub Menu Item 4</a></li>
-                <li><a href="#">Sub Menu Item 5</a></li>
+            <a href="#">音频</a>
+            <ul sec:authorize="isAuthenticated()">
+                <li><a th:href="'/upLoad?thisPage=1&uid='+${session.user.uId}">上传</a></li>
+            </ul>
+            <ul sec:authorize="!isAuthenticated()">
+                <li><a href="/upLoad">上传</a></li>
             </ul>
         </li>
         <!--        判断是否存在user-->
@@ -42,22 +36,32 @@
             </a>
         </li>
         <li sec:authorize="isAuthenticated()">
-            <a href="logout()">
-                <form enctype="application/x-www-form-urlencoded" method="post" th:action="@{/logout}">
-                    <input type="submit" value="注销">
-                </form>
+            <a th:text="${session.user.uName}">
             </a>
+            <ul>
+                <li>
+                    <a href="/logout">注销登陆</a>
+                </li>
+            </ul>
         </li>
+        <li><a href="/contactTheAdministrator">意见反馈</a></li>
     </ul>
     <div class="search">
-        <input class="search-input" name="search" type="text"/>
-        <input class="search-btn" name="search" type="submit" value=""/>
+        <label>
+            <input class="search-input" id="searchText" name="search" type="text"/>
+        </label>
+        <input class="search-btn" id="searchButton" name="search" type="submit" value=""/>
     </div>
 
     <script type="text/javascript">
-        function logout() {
-            $.post("/logout");
-        }
+        $('#searchButton').click(function () {
+            var searchText = $('#searchText').val();
+            if (searchText.trim() !== '') {
+                window.location.href = '/search?thisPage=1&searchText=' + searchText;
+            } else {
+                alert('不能搜索空字符')
+            }
+        })
 
         $(document).ready(function () {
 
@@ -84,8 +88,7 @@
 
         });
     </script>
-</div><!--main-navigation end-->
-
+</div>
 
 </body>
 </html>

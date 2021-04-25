@@ -1,28 +1,31 @@
 package com.lightseablue.bookwebsite;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.lightseablue.bookwebsite.entity.TableAllTypes;
+import com.lightseablue.bookwebsite.entity.TableAudioName;
+import com.lightseablue.bookwebsite.entity.TableUser;
 import com.lightseablue.bookwebsite.reptile.service.impl.XmlyReptile;
 import com.lightseablue.bookwebsite.service.TableAllTypesService;
 import com.lightseablue.bookwebsite.service.TableAudioNameService;
+import com.lightseablue.bookwebsite.service.TableUserService;
 import com.lightseablue.bookwebsite.utils.RedisUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @SpringBootTest
 class BookwebsiteApplicationTests {
@@ -100,16 +103,37 @@ class BookwebsiteApplicationTests {
         System.out.println(hget);
     }
 
-    @Test
-    public void testUrl() throws IOException {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        //加密方法
-        String a = encoder.encode("a");
-        System.out.println(a);
-    }
+    @Autowired
+    TableUserService tableUserService;
+    @Autowired
+    JavaMailSender javaMailSender;
 
     @Test
     public void testMybatisPlus() {
         tableAudioNameService.findAllTopBook(2);
+    }
+
+    @Test
+    public void testUrl() throws IOException {
+        UpdateWrapper<TableAudioName> tableAudioNameUpdateWrapper = new UpdateWrapper<>();
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE, -32);
+
+        tableAudioNameUpdateWrapper.lambda().eq(TableAudioName::getAllTypeId, 5).set(TableAudioName::getAudioNameDate, c.getTime());
+        tableAudioNameService.update(tableAudioNameUpdateWrapper);
+
+    }
+
+    @Test
+    public void email() {
+        //邮件设置1：一个简单的邮件
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setSubject("通知-明天来狂神这听课");
+        message.setText("今晚7:30开会");
+
+        message.setTo("1172893066@qq.com");
+        message.setFrom("1172893066@qq.com");
+        javaMailSender.send(message);
     }
 }

@@ -32,14 +32,22 @@ public class TableHistoryServiceImpl extends ServiceImpl<TableHistoryDao, TableH
         managementQueryWrapper.lambda().eq(TableHistory::getAudioNameId, audioNameId)
                 .eq(TableHistory::getUId, uid);
         TableHistory tableHistory = this.getOne(managementQueryWrapper);
-        TableAudioName tableAudioName = tableAudioNameService.getById(tableHistory.getAudioNameId());
-        TableAudioManagement audioManagement = tableAudioManagementService.getById(tableHistory.getAudioId());
+        if (tableHistory == null) {
+            return null;
+        }
+        QueryWrapper<TableAudioName> tableAudioNameQueryWrapper = new QueryWrapper<>();
+        tableAudioNameQueryWrapper.lambda().eq(TableAudioName::getAudioNameId, tableHistory.getAudioNameId()).eq(TableAudioName::getAudioNameStatus, 1);
+        TableAudioName tableAudioName = tableAudioNameService.getOne(tableAudioNameQueryWrapper);
+        QueryWrapper<TableAudioManagement> tableAudioManagementQueryWrapper = new QueryWrapper<>();
+        tableAudioManagementQueryWrapper.lambda().eq(TableAudioManagement::getAudioId, tableHistory.getAudioId()).eq(TableAudioManagement::getAudioStu, 1);
+        TableAudioManagement audioManagement = tableAudioManagementService.getOne(tableAudioManagementQueryWrapper);
         return PlayMusicDTO.builder()
                 .audioNameImg(tableAudioName.getAudioNameImg())
                 .audioAddress(audioManagement.getAudioAddress())
                 .audioName(audioManagement.getAudioName())
                 .audioNameId(tableAudioName.getAudioNameId())
                 .audioId(audioManagement.getAudioId())
+                .audioTypeId(tableAudioName.getAudioTypeId())
                 .build();
     }
 }

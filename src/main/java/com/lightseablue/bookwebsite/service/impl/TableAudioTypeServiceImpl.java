@@ -27,7 +27,7 @@ public class TableAudioTypeServiceImpl extends ServiceImpl<TableAudioTypeDao, Ta
     @Override
     public List<TableAudioType> getTableAudioTypes(Integer allTypeId) {
         QueryWrapper<TableAudioType> audioTypeWrapper = new QueryWrapper<>();
-        audioTypeWrapper.lambda().eq(TableAudioType::getAllTypeId, allTypeId);
+        audioTypeWrapper.lambda().eq(TableAudioType::getAllTypeId, allTypeId).eq(TableAudioType::getAudioTypeStu, 1);
         return this.list(audioTypeWrapper);
     }
 }

@@ -20,7 +20,7 @@ import java.util.List;
  * @since 2020-12-24 17:26:28
  */
 @RestController
-@RequestMapping("tableAudioType")
+@RequestMapping("/tableAudioType")
 public class TableAudioTypeController extends ApiController {
     /**
      * 服务对象

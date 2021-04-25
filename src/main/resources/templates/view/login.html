@@ -3,8 +3,11 @@
 
 <head>
     <meta charset="utf-8">
-    <title>HTML注册登录页面模板</title>
+    <title>登陆</title>
+    <!--   页面图标 -->
+    <link rel="icon" th:href="@{images/favicon.ico}">
     <link href="css/loginStyle.css" rel="stylesheet">
+    <script src="js/jquery-1.10.1.min.js"></script>
 </head>
 
 <body>
@@ -12,6 +15,7 @@
     <form enctype="application/x-www-form-urlencoded" method="post" th:action="@{/login}">
         <div class="form sign-in">
             <h2>欢迎回来</h2>
+            <h2 th:text="${#httpSession.getAttribute('loginError')}"></h2>
             <label>
                 <span>用户名</span>
                 <input name="userName" type="text"/>
@@ -31,7 +35,7 @@
         <div class="img">
             <div class="img__text m--up">
                 <h2>还未注册？</h2>
-                <p>立即注册，发现大量机会！</p>
+                <p>立即注册，发现不一样的知识！</p>
             </div>
             <div class="img__text m--in">
                 <h2>已有帐号？</h2>
@@ -42,28 +46,55 @@
                 <span class="m--in">登 录</span>
             </div>
         </div>
-
         <div class="form sign-up">
             <h2>立即注册</h2>
             <label>
                 <span>用户名</span>
-                <input type="text"/>
+                <input id="uName" type="text"/>
             </label>
             <label>
                 <span>邮箱</span>
-                <input type="email"/>
+                <input id="uEmail" type="email"/>
             </label>
             <label>
                 <span>密码</span>
-                <input type="password"/>
+                <input id="uPwd" type="password"/>
             </label>
-            <button class="submit" type="button">注 册</button>
+            <button class="submit" id="register" type="submit">注 册</button>
         </div>
     </div>
 </div>
 
-<script src="js/loginJs.js"></script>
+<script>
+    $('#register').click(function () {
+        var uName = $('#uName').val();
+        var email = $('#uEmail').val();
+        var pwd = $('#uPwd').val();
+        var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+        isok = reg.test(email);
+        if (uName.trim() == '' || email.trim() == '' || pwd.trim() == '') {
+            alert('请完成所有数据的填充.....');
+        } else if (!isok) {
+            alert("邮箱格式不正确......");
+        } else {
+            $.post("/tableUser/register", {
+                'uName': uName,
+                'uEmail': email,
+                'uPwd': pwd
+            }, function (data) {
+                if (data == true) {
+                    alert("注册成功,快登陆吧");
+                } else {
+                    alert("注册失败")
+                }
+            })
+        }
+    });
 
+    document.querySelector('.img__btn').addEventListener('click', function () {
+        document.querySelector('.content').classList.toggle('s--signup')
+    });
+</script>
 <div style="text-align:center;">
 </div>
 </body>

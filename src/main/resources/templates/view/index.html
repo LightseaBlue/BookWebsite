@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="view/Head :: Head">
 
-</head>
+    <title></title></head>
 <body>
 
 <!-- 头部滚动 -->
@@ -10,13 +10,13 @@
     <div class="mainbanner_window">
         <ul id="slideContainer">
             <li><a href="#"><img height="500" th:src="@{bookImg/1.jpg}"
-                                 width="1920"/></a></li>
+                                 width="1200"/></a></li>
             <li><a href="#"><img height="500" th:src="@{bookImg/2.jpg}"
-                                 width="1920"/></a></li>
+                                 width="1200"/></a></li>
             <li><a href="#"><img height="500" th:src="@{bookImg/3.jpg}"
-                                 width="1920"/></a></li>
+                                 width="1200"/></a></li>
             <li><a href="#"><img height="500" th:src="@{bookImg/4.jpg}"
-                                 width="1920"/></a></li>
+                                 width="1200"/></a></li>
         </ul>
     </div>
     <ul class="mainbanner_list">
@@ -90,11 +90,12 @@
                 <div class="jfdh1" th:each="item:${youLikesOrTops}">
                     <div class="jflp2">
                         <a href="javascript:void(0)"><img height="66"
-                                                          th:onclick="playMusic([[${item.audioNameId}]])"
+                                                          th:onclick="playMusic([[${item.audioNameId}]],[[${item.audioTypeId}]])"
                                                           th:src="${item.audioNameImg }" width="66"/></a>
                     </div>
                     <div class="jflp3">
-                        [(${item.audioNameName})] <br/> 播讲：[(${item.UName})]<br/> <a href="#">查看详情</a>
+                        [(${item.audioNameName})] <br/> 播讲：[(${item.UName})]<br/> <a
+                            th:href="'/audioFull?audioNameId='+${item.audioNameId}">查看详情</a>
                     </div>
                 </div>
             </div>
@@ -131,10 +132,11 @@
                             </h2>
                             <a href="javascript:void (0)">
                                 <div class="movielist">
-                                    <img th:onclick="playMusic([[${item1.audioNameId}]])"
+                                    <img th:onclick="playMusic([[${item1.audioNameId}]],[[${item1.audioTypeId}]])"
                                          th:src="${item1.audioNameImg }"/>
                                     <dl>
-                                        <dt th:text="${item1.audioNameName}"></dt>
+                                        <dt th:onclick="toAudioFull([[${item1.audioNameId}]])"
+                                            th:text="${item1.audioNameName}"></dt>
                                         <dd>
                                             <span style="font-size: 5px" th:text="演播+'：'+${item1.UName }"></span>
                                         </dd>
@@ -159,13 +161,14 @@
                                 <img height="278" th:src="${item2.audioNameImg}" width="184"/>
                                 <div class="pictitle" style="height:278px; width: 184px">
                                     <div class="zz">
-                                        <span style="color: white;" th:text="${item2.audioNameName}"></span><br/>
+                                        <span style="color: white;" th:onclick="toAudioFull([[${item2.audioNameId}]])"
+                                              th:text="${item2.audioNameName}"></span><br/>
                                         <span style="color: white; z-index:999; font-size: 18px;"
                                               th:text="演播+'：'+${item2.UName }"></span>
                                         <img src="img/play.png"
                                              style="height: 50px;width: 50px; background: white;border-radius: 45px;  position: absolute; bottom: 30px; "
                                              th:id="'yonPlay'+${item2.audioNameId}"
-                                             th:onclick="playMusic([[${item2.audioNameId}]])">
+                                             th:onclick="playMusic([[${item2.audioNameId}]],[[${item2.audioTypeId}]])">
                                     </div>
                                 </div>
                                 <div class="picshine">
@@ -187,12 +190,16 @@
 </div>
 <!--中部结束-->
 <script th:inline="javascript">
+    function toAudioFull(audioNameId) {
+        window.location.href = "/audioFull?audioNameId=" + audioNameId;
+    }
+
     //主页信息拼接
     $(function () {
         var content = '';
         let items = [[${allTypes}]];
         for (var i = 0; i < items.length; i++) {
-            if (i === 0) {
+            if (i == 0) {
                 content += '<div id="con_one_1" className="hover" style="width: 972px;height: 276px">';
             } else {
                 var num = i + 1;
@@ -202,7 +209,7 @@
 
             for (var j = 0; j < items[i].length; j++) {
                 var audioTypeName = items[i][j].audioTypeName;
-                if (j % 5 === 0) {
+                if (j % 5 == 0) {
                     content += '<ul style=" float: left; margin-left: 10px; margin-right: 30px">';
                 }
                 content += '<li style="font-size: 35px;margin-bottom: 10px;margin-left: 10px;margin-top: 5px;cursor: pointer;">' +
@@ -214,7 +221,7 @@
                     audioTypeName +
                     '</a>' +
                     '</li>';
-                if (j % 5 === 4 || j === items[i].length - 1) {
+                if (j % 5 == 4 || j == items[i].length - 1) {
                     content += '</ul>';
                 }
             }
@@ -259,10 +266,13 @@
                 $('#youLike').append(
                     "<div class=\"jfdh1\">\n" +
                     "<div class=\"jflp2\">\n" +
-                    "    <a href=\"javascript:void(0)\"><img src=\"" + data[i].audioNameImg + "\"  onclick=\"playMusic(" + data[i].audioNameId + ")\" width=\"66\" height=\"66\"/></a>\n" +
+                    "    <a href=\"javascript:void(0)\"><img src=\"" + data[i].audioNameImg + "\"  onclick=\"playMusic(" + data[i].audioNameId + "," +
+                    data[i].audioTypeId + ")\" width=\"66\" height=\"66\"/></a>\n" +
                     "</div>\n" +
                     "<div class=\"jflp3\">\n" +
-                    data[i].audioNameName + "<br/> 播讲：" + data[i].uname + "<br/> <a href=\"#\">查看详情</a>\n" +
+                    data[i].audioNameName + "<br/> 播讲：" + data[i].uname + "<br/> <a href=\"/audioFull?audioNameId=" +
+                    data[i].audioNameId +
+                    "\">查看详情</a>\n" +
                     "</div>\n" +
                     "</div>"
                 )
@@ -270,73 +280,7 @@
         });
     }
 
-    function switchMusic(audioNameId, audioId) {
-        $.get("playMusic/switchMusic", {
-            audioNameId: audioNameId,
-            audioId: audioId
-        }, function (data) {
-            setSrc(data);
-        });
-    }
 
-    function setSrc(data) {
-        $('.listMusic').css("background", "");
-        $("#list" + data.audioId).css("background", "url(images/nav-bg.jpg)");
-        $('#music').attr("src", data.audioAddress);
-        $('#nextMusic').attr("onclick", "switchMusic(" + data.audioNameId + "," + data.nextAudioId + ")");
-        $('#precMusic').attr("onclick", "switchMusic(" + data.audioNameId + "," + data.preAudioId + ")");
-    }
-
-    function appendList(data) {
-        var num = data.thisPage * 10 - 9;
-        for (var i = 0; i < data.list.length; i++) {
-            if (i % 2 == 0) {
-                $('#listShow').append('<hr><li class="listMusic" id="list' + data.list[i].audioId + '" style="font-size: 25px; color: cornflowerblue;" >' +
-                    '<a href="javascript:switchMusic(' + data.list[i].audioNameId + ',' + data.list[i].audioId + ')" ' +
-                    'style="color: cornflowerblue;">' + (i + num) + '.&nbsp' + data.list[i].audioName + '</a>' +
-                    // '<span style="float: left">' +
-                    // data.list[i].date +
-                    // '</span>' +
-                    '</li>');
-            } else {
-                $('#listShow').append('<hr><li class="listMusic" id="list' + data.list[i].audioId + '" style="font-size: 25px; color: #ff69b4;">' +
-                    '<a href="javascript:switchMusic(' + data.list[i].audioNameId + ',' + data.list[i].audioId + ')" ' +
-                    'style="color: hotpink;">' + (i + num) + '.&nbsp' + data.list[i].audioName + '</a>' +
-                    '</li>');
-            }
-        }
-        $('.listMusic').attr("page", data.thisPage);
-    }
-
-    function playMusic(audioNameId) {
-        //是否是同一个音频
-        var ispause = $('#music').attr("audioId");
-        $.get("playMusic/play", {
-            audioNameId: audioNameId
-        }, function (data) {
-            if (ispause === data.audioId) {
-                if ($('#music')[0].paused) {
-                    $('#music')[0].play();
-                    $('#yonPlay' + audioNameId).attr("src", "img/stop.png");
-                } else {
-                    $('#music')[0].pause();
-                    // $('#yonPlay'+audioId).attr("src","img/play.png");
-                }
-            } else {
-                $('#yonPlay' + ispause).attr("src", "img/play.png");
-                $('#music').attr("onpause", "isSleep(" + data.audioNameId + ")");
-                $('#music').attr("onplay", "isPlay(" + data.audioNameId + ")");
-                $('#playimg').attr("src", data.audioNameImg);
-                $('#music').attr("audioNameId", data.audioNameId);
-                $('#yonPlay' + audioNameId).attr("src", "img/stop.png");
-
-                $('#listShow').html('');
-                appendList(data);
-
-                setSrc(data);
-            }
-        });
-    }
 </script>
 
 

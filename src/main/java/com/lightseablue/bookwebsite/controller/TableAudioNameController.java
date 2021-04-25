@@ -2,16 +2,16 @@ package com.lightseablue.bookwebsite.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.ApiController;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lightseablue.bookwebsite.dto.TableAudioNameDTO;
+import com.lightseablue.bookwebsite.entity.TableAllTypes;
 import com.lightseablue.bookwebsite.entity.TableAudioName;
 import com.lightseablue.bookwebsite.entity.TableUser;
+import com.lightseablue.bookwebsite.service.TableAllTypesService;
 import com.lightseablue.bookwebsite.service.TableAudioNameService;
-import com.lightseablue.bookwebsite.service.TableUserService;
-import org.springframework.beans.BeanUtils;
+import com.lightseablue.bookwebsite.service.TableAudioTypeService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,6 +35,10 @@ public class TableAudioNameController extends ApiController {
      */
     @Resource
     private TableAudioNameService tableAudioNameService;
+    @Resource
+    private TableAudioTypeService tableAudioTypeService;
+    @Resource
+    private TableAllTypesService tableAllTypesService;
 
     /**
      * 切换你的喜欢
@@ -48,8 +52,8 @@ public class TableAudioNameController extends ApiController {
         //查找全部排行榜的页数
         Object thisNum1 = request.getSession().getAttribute("allTopBooksNum");
         int allTopBooksNum = 1;
-        if (thisNum1 != null) {
-            allTopBooksNum = Integer.parseInt(request.getSession().getAttribute("allTopBooksNum").toString());
+        if (thisNum1 != null && Integer.parseInt(thisNum1.toString()) <= 5) {
+            allTopBooksNum = Integer.parseInt(thisNum1.toString());
         }
 
         if (thisNum <= 8) {
@@ -71,10 +75,15 @@ public class TableAudioNameController extends ApiController {
         }
 
         if (youLike.size() < 3) {
-            for (int j = youLike.size(); j < 3; j++) {
-                youLike.add(tableAudioNameService.findAllTopBook(allTopBooksNum).get(j));
-                allTopBooksNum++;
+            if (youLike.size() == 0) {
+                youLike = new ArrayList<>();
             }
+            for (int j = youLike.size(); j < 3; j++) {
+                List<TableAudioNameDTO> allTopBook = tableAudioNameService.findAllTopBook(allTopBooksNum);
+                TableAudioNameDTO tableAudioNameDTO = allTopBook.get(j);
+                youLike.add(tableAudioNameDTO);
+            }
+            allTopBooksNum++;
         }
         //喜欢轮数
         request.getSession().setAttribute("thisNum", thisNum);

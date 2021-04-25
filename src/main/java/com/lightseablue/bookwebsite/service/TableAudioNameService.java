@@ -1,5 +1,6 @@
 package com.lightseablue.bookwebsite.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -18,6 +19,27 @@ import java.util.List;
  */
 public interface TableAudioNameService extends IService<TableAudioName> {
 
+    /**
+     * 根据id删除 大的书籍   变状态
+     *
+     * @param audioNameId
+     * @return
+     */
+    boolean updateByAudioNameId(String audioNameId);
+
+    /**
+     * 月榜前五
+     *
+     * @return
+     */
+    List<TableAudioNameDTO> monthTops();
+
+    /**
+     * 周榜前五
+     *
+     * @return
+     */
+    List<TableAudioNameDTO> weekTops();
 
     /**
      * 查询你的喜欢
@@ -42,6 +64,7 @@ public interface TableAudioNameService extends IService<TableAudioName> {
      * @return
      */
     List<TableAudioNameDTO> searchTopBookByType(int allTypeId);
+
 
     /**
      * 根据大类型查找一个类型的5本书
@@ -69,9 +92,37 @@ public interface TableAudioNameService extends IService<TableAudioName> {
     Page<TableAudioName> searchAllBooksByAudioTypeId(Integer audioNameId, Integer thisPage);
 
     /**
+     * 搜索书籍
+     *
+     * @param bookName
+     * @param thisPage
+     * @param uid
+     * @return
+     */
+    Page<TableAudioName> searchLikeBooks(String bookName, Integer thisPage, List<Integer> uid);
+
+    /**
+     * 根据播讲人查找
+     *
+     * @param uid
+     * @param thisPage
+     * @return
+     */
+    Page<TableAudioName> searchBooksByUid(Integer uid, Integer thisPage);
+
+    /**
      * page转换list
      *
      * @return
      */
     List<TableAudioNameDTO> pageToList(IPage<TableAudioName> tableAudioNameIPage);
+
+    /**
+     * 转dto
+     *
+     * @param tableAudioName
+     * @param uName
+     * @return
+     */
+    TableAudioNameDTO tableAudioNameToTableAudioNameDTO(TableAudioName tableAudioName, String uName);
 }

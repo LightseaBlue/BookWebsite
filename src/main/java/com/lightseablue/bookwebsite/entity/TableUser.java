@@ -15,7 +15,7 @@ import java.io.Serializable;
  * 用户表(TableUser)表实体类
  *
  * @author LightseaBlue
- * @since 2021-04-18 14:51:53
+ * @since 2021-04-22 12:43:47
  */
 @Data
 @ToString
@@ -60,8 +60,8 @@ public class TableUser extends Model<TableUser> implements Serializable {
     @TableField(value = "U_GOOD_AT")
     private String uGoodAt;
 
-    @TableField(value = "RESERVED1")
-    private String reserved1;
+    @TableField(value = "U_STU")
+    private Integer uStu;
 
     @TableField(value = "RESERVED2")
     private String reserved2;

@@ -1,6 +1,7 @@
 package com.lightseablue.bookwebsite.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -34,20 +35,36 @@ public class TableAudioManagementServiceImpl extends ServiceImpl<TableAudioManag
         page.setCurrent(thisPage);
         page.setSize(10);
         QueryWrapper<TableAudioManagement> managementQueryWrapper = new QueryWrapper<>();
-        managementQueryWrapper.lambda().eq(TableAudioManagement::getAudioNameId, audioNameId);
+        managementQueryWrapper.lambda().eq(TableAudioManagement::getAudioNameId, audioNameId).eq(TableAudioManagement::getAudioStu, 1);
         return this.page(page, managementQueryWrapper);
+    }
+
+    @Override
+    public boolean updateStu(Integer audioId) {
+        UpdateWrapper<TableAudioManagement> tableAudioManagementUpdateWrapper = new UpdateWrapper<>();
+        tableAudioManagementUpdateWrapper.lambda().eq(TableAudioManagement::getAudioId, audioId).set(TableAudioManagement::getAudioStu, 2);
+        return this.update(tableAudioManagementUpdateWrapper);
+    }
+
+    @Override
+    public List<TableAudioManagement> findMusicListByAudioNameId(String audioNameId) {
+        QueryWrapper<TableAudioManagement> managementQueryWrapper = new QueryWrapper<>();
+        managementQueryWrapper.lambda().eq(TableAudioManagement::getAudioNameId, audioNameId).eq(TableAudioManagement::getAudioStu, 1);
+        return this.list(managementQueryWrapper);
     }
 
     @Override
     public TableAudioManagement getAudioName(String audioNameId, Integer audioId) {
         QueryWrapper<TableAudioManagement> managementQueryWrapper = new QueryWrapper<>();
-        managementQueryWrapper.lambda().eq(TableAudioManagement::getAudioNameId, audioNameId).eq(TableAudioManagement::getAudioId, audioId);
+        managementQueryWrapper.lambda().eq(TableAudioManagement::getAudioNameId, audioNameId).eq(TableAudioManagement::getAudioId, audioId).eq(TableAudioManagement::getAudioStu, 1);
         return this.getOne(managementQueryWrapper);
     }
 
     @Override
     public PlayMusicDTO getSrcById(Integer audioId) {
-        TableAudioManagement tableAudioManagement = this.getById(audioId);
+        QueryWrapper<TableAudioManagement> tableAudioManagementQueryWrapper = new QueryWrapper<>();
+        tableAudioManagementQueryWrapper.lambda().eq(TableAudioManagement::getAudioId, audioId).eq(TableAudioManagement::getAudioStu, 1);
+        TableAudioManagement tableAudioManagement = this.getOne(tableAudioManagementQueryWrapper);
         return PlayMusicDTO.builder().audioId(tableAudioManagement.getAudioId())
                 .audioAddress(tableAudioManagement.getAudioAddress())
                 .audioName(tableAudioManagement.getAudioName())
@@ -58,11 +75,13 @@ public class TableAudioManagementServiceImpl extends ServiceImpl<TableAudioManag
     @Override
     public PlayMusicDTO findFirstSrc(String audioNameId) {
         QueryWrapper<TableAudioManagement> managementQueryWrapper = new QueryWrapper<>();
-        managementQueryWrapper.lambda().eq(TableAudioManagement::getAudioNameId, audioNameId)
+        managementQueryWrapper.lambda().eq(TableAudioManagement::getAudioNameId, audioNameId).eq(TableAudioManagement::getAudioStu, 1)
                 .orderByAsc(TableAudioManagement::getAudioId)
                 .last("limit 1");
         TableAudioManagement tableAudioManagement = this.getOne(managementQueryWrapper);
-        TableAudioName tableAudioName = tableAudioNameService.getById(audioNameId);
+        QueryWrapper<TableAudioName> tableAudioNameQueryWrapper = new QueryWrapper<>();
+        tableAudioNameQueryWrapper.lambda().eq(TableAudioName::getAudioNameId, audioNameId).eq(TableAudioName::getAudioNameStatus, 1);
+        TableAudioName tableAudioName = tableAudioNameService.getOne(tableAudioNameQueryWrapper);
         return PlayMusicDTO.builder()
                 .audioNameImg(tableAudioName.getAudioNameImg())
                 .audioId(tableAudioManagement.getAudioId())

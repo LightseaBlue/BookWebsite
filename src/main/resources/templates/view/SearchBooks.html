@@ -3,10 +3,9 @@
 <head th:replace="view/Head :: Head">
     <title></title>
 </head>
-
 <body>
 <div class="con_ny" id="bookLists">
-    <h4 class="con_dqwz">您的当前位置：<a href="/">首页</a> >> [[${allTypeName}]]</h4>
+    <h4 class="con_dqwz">您的当前位置：<a href="/">首页</a> >>查找结果</h4>
     <div class="tplist1" style="margin-left:0px;" th:each="item,itemNum:${bookLists}">
         <div class="tplist1_1"><a th:href="'/audioFull?audioNameId='+${item.audioNameId}">
             <img height="185" th:src="${item.audioNameImg}" width="296"/></a></div>
@@ -17,14 +16,14 @@
                 class="tejia">点击数: [[${item.audioNameCount}]]</span></div>
     </div>
     <div class="fy">
-        <a th:href="'/booksList?allTypeId='+${allTypeId}+'&thisPage=1&allTypeName='+${allTypeName}">首页</a>
-        <a th:href="${prePage lt 1}?'/booksList?allTypeId='+${allTypeId}+'&thisPage=1&allTypeName='+${allTypeName} :'/booksList?allTypeId='+${allTypeId}+'&thisPage='+${prePage}+'&allTypeName='+${allTypeName}">上一页</a>
-        <a th:href="${thisPage ge allPages}?'/booksList?allTypeId='+${allTypeId}+'&thisPage='+${allPages}+'&allTypeName='+${allTypeName}:'/booksList?allTypeId='+${allTypeId}+'&thisPage'+${thisPage}+'&allTypeName='+${allTypeName}">下一页</a>
-        <a th:href="'/booksList?allTypeId='+${allTypeId}+'&thisPage='+${allPages}+'&allTypeName='+${allTypeName}">尾页</a>
+        <!--    todo: 可以做优化不要每次都模糊查询 -->
+        <a th:href="'/search?searchText='+${searchText}+'&thisPage=1'">首页</a>
+        <a th:href="${prePage lt 1}?'/search?searchText='+${searchText}+'&thisPage=1':'/search?searchText='+${searchText}+'&thisPage='+${prePage}">上一页</a>
+        <a th:href="${thisPage ge allPages}?'/search?searchText='+${searchText}+'&thisPage='+${allPages}:'/search?searchText='+${searchText}+'&thisPage='+${thisPage}">下一页</a>
+        <a th:href="'/search?searchText='+${searchText}+'&thisPage='+${allPages}">尾页</a>
         <span>页次：[[${thisPage}-1]]/[[${allPages}]]页</span> <span>6个图书/页</span>
         <span>共[[${allBookNum}]]个数据</span>
     </div>
-    <div style="height: 300px"></div>
 </div>
 
 </body>

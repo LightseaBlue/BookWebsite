@@ -1,5 +1,7 @@
 package com.lightseablue.bookwebsite.entity;
 
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,7 +17,7 @@ import java.io.Serializable;
  * 书籍/专辑名名记录表   ps: 音乐:流行音乐:一个人(TableAudioName)表实体类
  *
  * @author LightseaBlue
- * @since 2021-04-18 14:51:52
+ * @since 2021-04-22 17:47:52
  */
 @Data
 @ToString
@@ -67,8 +69,8 @@ public class TableAudioName extends Model<TableAudioName> implements Serializabl
     @TableField(value = "U_ID")
     private Integer uId;
 
-    @TableField(value = "RESERVED1")
-    private String reserved1;
+    @TableField(value = "AUDIO_NAME_DATE")
+    private Date audioNameDate;
 
     @TableField(value = "RESERVED2")
     private String reserved2;

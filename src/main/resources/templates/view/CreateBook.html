@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="view/Head :: Head">
+    <title></title>
+</head>
+<body>
+<div class="con_ny" id="bookLists">
+    <h4 class="con_dqwz">您的当前位置：<a href="/">首页</a> >>查找结果</h4>
+    <div>
+        书籍名称:<input id="bookName" type="text">
+    </div>
+    <div>
+        分类类型:<select id="allTypeId"
+                     onchange="createBookType(this.options[this.options.selectedIndex].value)">
+        <option th:each="item:${bigTypes}" th:text="${item.allTypeName}"
+                th:value="${item.allTypeId}"></option>
+    </select>>
+    </div>
+    <div>
+        书籍类型:<select></select>
+    </div>
+    <div>
+        书籍介绍:<textarea></textarea>
+    </div>
+    <div>
+        书籍图片:<input type="file">
+    </div>
+    <button value="确认提交"></button>
+</div>
+<script>
+    function createBookType(allTypeId) {
+        alert(allTypeId);
+    }
+</script>
+</body>
+</html>

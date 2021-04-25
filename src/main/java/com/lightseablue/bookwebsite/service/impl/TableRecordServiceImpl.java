@@ -1,5 +1,6 @@
 package com.lightseablue.bookwebsite.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lightseablue.bookwebsite.dao.TableRecordDao;
 import com.lightseablue.bookwebsite.entity.TableRecord;
@@ -15,4 +16,10 @@ import org.springframework.stereotype.Service;
 @Service("tableRecordService")
 public class TableRecordServiceImpl extends ServiceImpl<TableRecordDao, TableRecord> implements TableRecordService {
 
+    @Override
+    public TableRecord getUser(Integer uid, Integer audioTypeId) {
+        QueryWrapper<TableRecord> tableRecordQueryWrapper = new QueryWrapper<>();
+        tableRecordQueryWrapper.lambda().eq(TableRecord::getUId, uid).eq(TableRecord::getAudioTypeId, audioTypeId);
+        return this.getOne(tableRecordQueryWrapper);
+    }
 }

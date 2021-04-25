@@ -15,7 +15,7 @@ import java.io.Serializable;
  * 大类型下的小类型   ps:    音乐:流行音乐(TableAudioType)表实体类
  *
  * @author LightseaBlue
- * @since 2021-04-18 14:51:52
+ * @since 2021-04-22 12:43:14
  */
 @Data
 @ToString
@@ -48,8 +48,8 @@ public class TableAudioType extends Model<TableAudioType> implements Serializabl
     @TableField(value = "AUDIO_TYPE_IMG")
     private String audioTypeImg;
 
-    @TableField(value = "RESERVED1")
-    private String reserved1;
+    @TableField(value = "AUDIO_TYPE_STU")
+    private Integer audioTypeStu;
 
     @TableField(value = "RESERVED2")
     private String reserved2;

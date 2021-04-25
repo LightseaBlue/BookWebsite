@@ -3,7 +3,7 @@
 <head th:fragment="Head">
     <meta charset="UTF-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <title>记得改</title>
+    <title>马老四听书</title>
     <!--   页面图标 -->
     <link rel="icon" th:href="@{images/favicon.ico}">
     <!-- 主页 -->
@@ -29,7 +29,80 @@
     <!--    播放器 -->
     <th:block th:include="view/Player :: Player"/>
 
+    <script>
+        function switchMusic(audioNameId, audioId) {
+            $.get("playMusic/switchMusic", {
+                audioNameId: audioNameId,
+                audioId: audioId
+            }, function (data) {
+                setSrc(data);
+            });
+        }
 
+        function setSrc(data) {
+            $('.listMusic').css("background", "");
+            $("#list" + data.audioId).css("background", "url(images/nav-bg.jpg)");
+            $('#music').attr("src", data.audioAddress);
+            $('#nextMusic').attr("onclick", "switchMusic(" + data.audioNameId + "," + data.nextAudioId + ")");
+            $('#precMusic').attr("onclick", "switchMusic(" + data.audioNameId + "," + data.preAudioId + ")");
+        }
+
+        function appendList(data) {
+            var num = data.thisPage * 10 - 9;
+            for (var i = 0; i < data.list.length; i++) {
+                if (i % 2 == 0) {
+                    $('#listShow').append('<hr><li class="listMusic" id="list' + data.list[i].audioId + '" style="font-size: 25px; color: cornflowerblue;" >' +
+                        '<a href="javascript:switchMusic(' + data.list[i].audioNameId + ',' + data.list[i].audioId + ')" ' +
+                        'style="color: cornflowerblue;">' + (i + num) + '.&nbsp' + data.list[i].audioName + '</a>' +
+                        // '<span style="float: left">' +
+                        // data.list[i].date +
+                        // '</span>' +
+                        '</li>');
+                } else {
+                    $('#listShow').append('<hr><li class="listMusic" id="list' + data.list[i].audioId + '" style="font-size: 25px; color: #ff69b4;">' +
+                        '<a href="javascript:switchMusic(' + data.list[i].audioNameId + ',' + data.list[i].audioId + ')" ' +
+                        'style="color: hotpink;">' + (i + num) + '.&nbsp' + data.list[i].audioName + '</a>' +
+                        '</li>');
+                }
+            }
+            $('.listMusic').attr("page", data.thisPage);
+        }
+
+        function playMusic(audioNameId, audioTypeId) {
+            //是否是同一个音频
+            var ispause = $('#music').attr("audioId");
+            $.get("playMusic/play", {
+                audioNameId: audioNameId,
+                audioTypeId: audioTypeId
+            }, function (data) {
+                // alert(ispause);
+                // alert(data.audioId);
+                // alert(ispause == data.audioId);
+                if (ispause == data.audioId) {
+                    if ($('#music')[0].paused) {
+                        $('#music')[0].play();
+                        $('#yonPlay' + audioNameId).attr("src", "img/stop.png");
+                    } else {
+                        $('#music')[0].pause();
+                        // $('#yonPlay'+audioId).attr("src","img/play.png");
+                    }
+                } else {
+                    $('#yonPlay' + ispause).attr("src", "img/play.png");
+                    $('#music').attr("onpause", "isSleep(" + data.audioNameId + ")");
+                    $('#music').attr("onplay", "isPlay(" + data.audioNameId + ")");
+                    $('#playimg').attr("src", data.audioNameImg);
+                    $('#music').attr("audioNameId", data.audioNameId);
+                    $('#music').attr("audioId", data.audioId);
+                    $('#yonPlay' + audioNameId).attr("src", "img/stop.png");
+
+                    $('#listShow').html('');
+                    appendList(data);
+
+                    setSrc(data);
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 

@@ -15,7 +15,7 @@ import java.io.Serializable;
  * 总类型表   ps:   音乐    图书(TableAllTypes)表实体类
  *
  * @author LightseaBlue
- * @since 2021-04-18 14:51:51
+ * @since 2021-04-22 12:41:09
  */
 @Data
 @ToString
@@ -28,7 +28,7 @@ import java.io.Serializable;
 public class TableAllTypes extends Model<TableAllTypes> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("主键")
+    @ApiModelProperty("主键 ")
     @TableId(value = "ALL_TYPE_ID", type = IdType.AUTO)
     private Integer allTypeId;
 
@@ -44,8 +44,9 @@ public class TableAllTypes extends Model<TableAllTypes> implements Serializable 
     @TableField(value = "ALL_TYPE_FOUNDER")
     private String allTypeFounder;
 
-    @TableField(value = "RESERVED1")
-    private String reserved1;
+    @ApiModelProperty("状态")
+    @TableField(value = "ALL_TYPE_STU")
+    private Integer allTypeStu;
 
     @TableField(value = "RESERVED2")
     private String reserved2;

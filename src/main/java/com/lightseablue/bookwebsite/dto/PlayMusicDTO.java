@@ -32,6 +32,8 @@ public class PlayMusicDTO implements Serializable {
     private String audioName;
     @ApiModelProperty("书籍图片")
     private String audioNameImg;
+    @ApiModelProperty("数据类型id")
+    private Integer audioTypeId;
     @ApiModelProperty("章节音频地址")
     private String audioAddress;
     @ApiModelProperty("当前章节id")

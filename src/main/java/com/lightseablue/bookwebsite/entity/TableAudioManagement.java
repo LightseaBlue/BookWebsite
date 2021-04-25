@@ -17,7 +17,7 @@ import java.io.Serializable;
  * 音频管理表      音频地址   (TableAudioManagement)表实体类
  *
  * @author LightseaBlue
- * @since 2021-04-18 14:51:52
+ * @since 2021-04-22 12:43:01
  */
 @Data
 @ToString
@@ -53,8 +53,8 @@ public class TableAudioManagement extends Model<TableAudioManagement> implements
     @TableField(value = "AUDIO_ADDRESS")
     private String audioAddress;
 
-    @TableField(value = "RESERVED1")
-    private String reserved1;
+    @TableField(value = "AUDIO_STU")
+    private Integer audioStu;
 
     @TableField(value = "RESERVED2")
     private String reserved2;

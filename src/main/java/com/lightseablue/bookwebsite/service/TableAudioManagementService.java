@@ -25,6 +25,22 @@ public interface TableAudioManagementService extends IService<TableAudioManageme
     IPage<TableAudioManagement> findMusicList(String audioNameId, Integer thisPage);
 
     /**
+     * 修改一个音频的状态
+     *
+     * @param audioId
+     * @return
+     */
+    boolean updateStu(Integer audioId);
+
+    /**
+     * 查找全部音频
+     *
+     * @param audioNameId
+     * @return
+     */
+    List<TableAudioManagement> findMusicListByAudioNameId(String audioNameId);
+
+    /**
      * 目的该条id记录是否有数据返回
      *
      * @param audioNameId

@@ -29,11 +29,22 @@ spring:
     mode: LEGACYHTML5
     cache: false
     prefix: classpath:/templates/
+  #邮件发送
+  mail:
+    username: 1172893066@qq.com
+    password: wefmdbbjashhhbdd
+    host: smtp.qq.com
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+      mail.smtp.socketFactory.port: 465
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+      mail.smtp.socketFactory.fallback: false
+
 
   #配置文件声明
   profiles:
     active: dev
-
-#mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

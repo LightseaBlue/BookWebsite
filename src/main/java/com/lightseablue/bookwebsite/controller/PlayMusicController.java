@@ -3,10 +3,14 @@ package com.lightseablue.bookwebsite.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lightseablue.bookwebsite.dto.PlayMusicDTO;
 import com.lightseablue.bookwebsite.entity.TableAudioManagement;
+import com.lightseablue.bookwebsite.entity.TableRecord;
 import com.lightseablue.bookwebsite.entity.TableUser;
 import com.lightseablue.bookwebsite.service.TableAudioManagementService;
 import com.lightseablue.bookwebsite.service.TableHistoryService;
+import com.lightseablue.bookwebsite.service.TableRecordService;
+import com.lightseablue.bookwebsite.service.TableUserService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +34,11 @@ public class PlayMusicController {
 
     @Autowired
     TableHistoryService tableHistoryService;
+
+    @Autowired
+    TableRecordService tableRecordService;
+    @Autowired
+    TableUserService tableUserService;
 
     @ApiOperation("添加音频列表")
     @GetMapping("/findMusicList")
@@ -67,12 +76,25 @@ public class PlayMusicController {
      * @param audioNameId
      */
     @GetMapping("/play")
-    public PlayMusicDTO play(HttpServletRequest request, String audioNameId) {
+    public PlayMusicDTO play(HttpServletRequest request, String audioNameId, Integer audioTypeId) {
         TableUser user = (TableUser) request.getSession().getAttribute("user");
         PlayMusicDTO bean;
         if (user != null) {
+            //加入用户行为表
+            TableRecord recordUser = tableRecordService.getUser(user.getUId(), audioTypeId);
+            if (recordUser != null) {
+                recordUser.setRNum(recordUser.getRNum() + 1);
+            } else {
+                recordUser = TableRecord.builder()
+                        .uId(user.getUId())
+                        .audioTypeId(audioTypeId)
+                        .rNum(1L)
+                        .build();
+            }
+            tableRecordService.saveOrUpdate(recordUser);
             bean = tableHistoryService.findUserFirstSrc(audioNameId, user.getUId());
             if (bean == null) {
+                // todo: 断点续听没有数据
                 bean = tableAudioManagementService.findFirstSrc(audioNameId);
             }
         } else {
