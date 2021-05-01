@@ -13,7 +13,7 @@
         <li>
             <a href="#">发现</a>
             <ul>
-                <li th:each="item:${bigTypes}">
+                <li th:each="item:${session.bigTypes}">
                     <a th:href="'/booksList?allTypeId='+${item.allTypeId}+'&thisPage=1&allTypeName='+${item.allTypeName}"
                        th:text="${item.allTypeName}">音乐</a>
                 </li>
@@ -23,7 +23,7 @@
         <li>
             <a href="#">音频</a>
             <ul sec:authorize="isAuthenticated()">
-                <li><a th:href="'/upLoad?thisPage=1&uid='+${session.user.uId}">上传</a></li>
+                <li><a th:href="'/upLoad?thisPage=1&uid='+${session.user?.uId}">上传</a></li>
             </ul>
             <ul sec:authorize="!isAuthenticated()">
                 <li><a href="/upLoad">上传</a></li>
@@ -36,11 +36,17 @@
             </a>
         </li>
         <li sec:authorize="isAuthenticated()">
-            <a th:text="${session.user.uName}">
+            <a th:text="${session.user?.uName}">
             </a>
             <ul>
                 <li>
                     <a href="/logout">注销登陆</a>
+                </li>
+                <li>
+                    <a th:href="'/toUpDateUser?uId='+${session.user?.uId}">我的主页</a>
+                </li>
+                <li>
+                    <a href="/toUpDateUserPwd">修改密码</a>
                 </li>
             </ul>
         </li>

@@ -1,14 +1,14 @@
 package com.lightseablue.bookwebsite.controller;
 
 import com.lightseablue.bookwebsite.entity.TableUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -18,18 +18,19 @@ import javax.servlet.http.HttpServletRequest;
  * @author: LightseaBlue
  * @date: 2021/4/24     22:08
  */
-@Controller
+@RestController
 public class EmailController {
 
+    @Autowired
+    JavaMailSender javaMailSender;
+
     @PostMapping("/toAdmin")
-    @ResponseBody
     public Integer toAdmin(HttpServletRequest request, String topicVal, String detailVal) {
-        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+
         SimpleMailMessage message = new SimpleMailMessage();
         TableUser user = (TableUser) request.getSession().getAttribute("user");
         message.setSubject(topicVal);
         message.setText("用户:" + user.getUName() + "对本站提出意见,请处理........\n" + detailVal);
-        //todo: 这里是自己给自己发,应该是用户给发.
         message.setTo("1172893066@qq.com");
         message.setFrom("1172893066@qq.com");
         try {
@@ -39,5 +40,22 @@ public class EmailController {
             return 2;
         }
         return 1;
+    }
+
+    @PostMapping("getCode")
+    private Integer getCode(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setSubject("马老四听书");
+        int num = (int) (Math.random() * 9000 + 1000);
+        message.setText("您好!\n" + "本次验证码为:" + num);
+        message.setTo("1172893066@qq.com");
+        message.setFrom(email);
+        try {
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 2;
+        }
+        return num;
     }
 }

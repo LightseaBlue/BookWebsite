@@ -34,17 +34,18 @@ spring:
     username: 1172893066@qq.com
     password: wefmdbbjashhhbdd
     host: smtp.qq.com
-    protocol: smtp
     default-encoding: UTF-8
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
-      mail.smtp.starttls.required: true
-      mail.smtp.socketFactory.port: 465
-      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
-      mail.smtp.socketFactory.fallback: false
+  #  文件上传的最大大小设置
+  servlet:
+    multipart:
+      max-request-size: 100MB
+      max-file-size: 10MB
 
 
   #配置文件声明
   profiles:
     active: dev
+

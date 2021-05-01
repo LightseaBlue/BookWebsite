@@ -1,19 +1,181 @@
 <!DOCTYPE html>
-<html lang="en">
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="view/Head :: Head">
     <title></title>
 </head>
+<style>
+    input {
+        border: 2px solid #d2d2d2;
+        background-color: transparent;
+        width: 162px;
+    }
+</style>
 <body>
 <div class="con_ny" id="bookLists">
     <h4 class="con_dqwz">您的当前位置：<a href="/">首页</a> >>用户资料修改</h4>
-    用户名：头像：
-    邮箱：
-    性别：
-    关于自己的介绍：
+    <form enctype="multipart/form-data" id="form" method="post">
+        <div style="margin-top: 20px">
+            <label for="avatarCropper">
+                <input accept=".PNG,.JPEG,.JPG" hidden="" id="avatarCropper" name="file" type="file">
+                <img alt="用户头像" id="userImg" style="width: 150px; height: 120px" th:src="${user.UPhoto}">
+            </label>
+        </div>
+        <div style="margin-top: 20px">
+            <label>
+                用户名：
+                <input name="uName" th:value="${user.UName}" type="text">
+            </label>
+        </div>
+        <input hidden="hidden" name="uId" th:value="${user.UId}" type="text">
+        <div style="margin-top: 20px">
+            <label>
+                性&nbsp;别：
+                <select name="uSes"
+                        style=" border: 2px solid #d2d2d2; background-color: transparent; width: 162px;"
+                        th:value="${user.USex}">
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </label>
+        </div>
+        <div style="margin-top: 20px">
+            <label>
+                关于自己的介绍：
+                <textarea
+                        name="uAbout"
+                        style="margin-top: 20px;  border: 2px solid #d2d2d2; background-color: transparent; width: 360px; height: 150px;">[[${user.UAbout}]]</textarea>
+            </label>
+        </div>
+    </form>
 
-    修改头像
+    <button onclick="upDateUserMes()" style=" width: 71px;
+    height: 30px;
+    margin-top: 20px;
+    margin-left: 90px;">确认修改
+    </button>
+    <HR style="size: A3; margin-top: 20px">
 
+    <div style="margin-top: 20px">
+        <div>
+            <label>
+                原&nbsp;邮&nbsp;箱：
+                <input id="OldEmail" readonly style="border: 0" th:value="${user.UEmail}" type="text">
+            </label>
+        </div>
+        <div style="margin-top: 20px">
+            <label>
+                新&nbsp;邮&nbsp;箱：
+                <input id="newEmail" type="text">
+            </label>
+        </div>
+        <div style="margin-top: 20px">
+            <label for="veri-code">输入验证码：</label>
+            <input id="veri-code" type="number">
+            <a class="send" href="javascript:getCode()">发送验证码</a>
+            <span class="time" hidden="hidden"><em>60</em>s</span>
+        </div>
+        <button style=" width: 71px;
+    height: 30px;
+    margin-top: 20px;
+    margin-left: 90px;" th:onclick="'upDateEmail('+${user.UId}+')'">确认修改
+        </button>
+    </div>
 </div>
+<script>
+    var num_code;
+
+    //更新用户的其他信息
+    function upDateUserMes() {
+        var form = new FormData(document.getElementById('form'));
+        $.ajax({
+            url: "/tableUser/upDateUserMes",
+            type: "post",
+            data: form,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (data == "false") {
+                    alert("服务器内部错误....");
+                } else if (data == "true") {
+                    alert("信息修改成功....");
+                } else {
+                    $('#userImg').attr("src", data);
+                    alert("信息修改成功.....");
+                }
+            },
+            error: function (e) {
+                alert("错误！！");
+            }
+        });
+    }
+
+    //更新邮箱
+    function upDateEmail(uid) {
+        var code = $('#veri-code').val();
+        var uEmail = $('#newEmail').val();
+        if (code == '' || uEmail == '') {
+            alert("请填写完整信息.....");
+            return;
+        }
+        if (num_code != code) {
+            alert('验证码错误...');
+        } else {
+            $.post("/tableUser/upDateEmail", {
+                uId: uid,
+                uEmail: uEmail
+            }, function (data) {
+                if (data == '2') {
+                    alert('服务器内部错误...');
+                } else {
+                    alert("邮箱修改成功....");
+                    $('#oldPwd').attr("value", data);
+                }
+            });
+        }
+    }
+
+    //验证码事件
+    function getCode() {
+        var email = $('#newEmail').val();
+        var oldEmail = $('#OldEmail').val();
+        if (email == oldEmail) {
+            alert("和原邮箱一样....");
+            return;
+        }
+        var reg = /^[\d\w]+@[\d\w]+.com$/;
+        var x = email.match(reg);
+        if (x != null) {
+            var oTime = $(".time"),
+                oSend = $(".send"),
+                num1 = parseInt(oTime.text()),
+                oEm = $(".time em");
+            oSend.hide();
+            oTime.attr("hidden", false);
+            var timer = setInterval(function () {
+                var num2 = num1 -= 1;
+                oEm.text(num2);
+                if (num2 == 0) {
+                    clearInterval(timer);
+                    oSend.text("重新发送验证码");
+                    oSend.show();
+                    oEm.text("60");
+                    oTime.attr('hidden', 'hidden');
+                }
+            }, 1000);
+            //邮件发送请求
+            $.post("/getCode", {
+                email: email
+            }, function (data) {
+                if (data == 2) {
+                    alert('发送失败，请重试');
+                } else {
+                    num_code = data;
+                }
+            });
+        } else {
+            alert("请输入正确的邮箱......");
+        }
+    }
+</script>
 </body>
 </html>

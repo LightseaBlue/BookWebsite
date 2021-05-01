@@ -28,4 +28,13 @@ public interface TableUserService extends IService<TableUser> {
      */
     List<TableUser> getUsersLikeUname(String uName);
 
+    /**
+     * 修改密码
+     *
+     * @param uId
+     * @param newPed
+     * @return
+     */
+    boolean upDatePwd(Integer uId, String newPwd);
+
 }

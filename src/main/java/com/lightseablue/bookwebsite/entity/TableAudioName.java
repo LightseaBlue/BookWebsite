@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * 书籍/专辑名名记录表   ps: 音乐:流行音乐:一个人(TableAudioName)表实体类

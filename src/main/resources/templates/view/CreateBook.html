@@ -6,30 +6,97 @@
 <body>
 <div class="con_ny" id="bookLists">
     <h4 class="con_dqwz">您的当前位置：<a href="/">首页</a> >>查找结果</h4>
+    <form id="form" method="post" role="form">
+        <div style="margin-top: 20px">
+            <label for="bookName">书籍名称:</label><input id="bookName" name="audioNameName" style="border: 2px solid #d2d2d2;
+        background-color: transparent;" type="text">
+        </div>
+        <input name="uId" th:value="${session.user?.uId}" type="hidden">
+        <div style="margin-top: 20px">
+            <label for="allTypeId">分类类型:</label><select id="allTypeId" name="allTypeId"
+                                                        onchange="createBookType(this.options[this.options.selectedIndex].value)"
+                                                        style="border: 2px solid #d2d2d2; background-color: transparent; width: 162px">
+            <option style="display: none">请选择.....</option>
+            <option th:each="item:${bigTypes}" th:text="${item.allTypeName}"
+                    th:value="${item.allTypeId}"></option>
+        </select>
+        </div>
+        <div style="margin-top: 20px">
+            <label for="audioType">书籍类型:</label>
+            <select id="audioType" name="audioTypeId" style="border: 2px solid #d2d2d2;
+        width: 162px;
+        background-color: transparent;">
+
+            </select>
+        </div>
+        <div style="margin-top: 20px">
+            书籍图片:<input accept="image/png, image/jpeg, image/gif, image/jpg;" id="bookImg" name="file" style="border: 2px solid #d2d2d2;
+        background-color: transparent;"
+                        type="file"
+        >
+        </div>
+        <div>
+            <label>
+                书籍介绍:
+                <textarea id="bookIntroduce" name="audioNameSummary"
+                          style="margin-top: 20px;
+        border: 2px solid #d2d2d2;
+        background-color: transparent;
+        width: 360px;
+    height: 150px;"></textarea>
+            </label>
+        </div>
+    </form>
     <div>
-        书籍名称:<input id="bookName" type="text">
+        <input onclick="createBook()" style="width: 71px;
+                   height: 30px;
+                   margin-top: 20px;
+                   margin-left: 170px;" type="button" value="确认上传">
     </div>
-    <div>
-        分类类型:<select id="allTypeId"
-                     onchange="createBookType(this.options[this.options.selectedIndex].value)">
-        <option th:each="item:${bigTypes}" th:text="${item.allTypeName}"
-                th:value="${item.allTypeId}"></option>
-    </select>>
-    </div>
-    <div>
-        书籍类型:<select></select>
-    </div>
-    <div>
-        书籍介绍:<textarea></textarea>
-    </div>
-    <div>
-        书籍图片:<input type="file">
-    </div>
-    <button value="确认提交"></button>
 </div>
 <script>
+    function createBook() {
+        var audioNameName = $('#bookName').val();
+        var allTypeId = $('#allTypeId').val();
+        var audioNameId = $('#audioType').value;
+        var audioNameImg = $('#bookImg').val();
+        var audioNameSummary = $('#bookInformation').val();
+        if (audioNameName == '' || audioNameSummary == '' || audioNameImg == '' || audioNameId == 'undefined' || allTypeId == 'undefined') {
+            alert("请检查信息........");
+        } else {
+            var form = new FormData(document.getElementById("form"));
+            $.ajax({
+                url: "/tableAudioName/upDateBook",
+                type: "post",
+                data: form,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data == "false") {
+                        alert("服务器内部错误....");
+                    } else {
+                        alert("上传成功,即将跳转书籍详情.....");
+                        window.location.href = "/audioFull?audioNameId=" + data;
+                    }
+                },
+                error: function (e) {
+                    alert("错误！！");
+                }
+            });
+        }
+
+    }
+
     function createBookType(allTypeId) {
-        alert(allTypeId);
+        $.post("/tableAudioType/getAudioTypeByAllTypeId", {
+            'allTypeId': allTypeId
+        }, function (data) {
+            var audioTypeHtml = '<option style="display: none">请选择......</option>';
+            for (var i = 0; i < data.length; i++) {
+                audioTypeHtml += '<option value="' + data[i].audioTypeId + '">' + data[i].audioTypeName + '</option>'
+            }
+            document.getElementById('audioType').innerHTML = audioTypeHtml;
+        });
     }
 </script>
 </body>

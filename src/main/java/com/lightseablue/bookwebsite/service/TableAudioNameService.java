@@ -19,6 +19,15 @@ import java.util.List;
  */
 public interface TableAudioNameService extends IService<TableAudioName> {
 
+
+    /**
+     * 根据主键更新点击量
+     *
+     * @param audioNameId
+     * @return
+     */
+    boolean updateClickThroughRateByAudioNameId(String audioNameId, Long num);
+
     /**
      * 根据id删除 大的书籍   变状态
      *

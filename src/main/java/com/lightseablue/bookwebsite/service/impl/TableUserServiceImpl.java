@@ -1,6 +1,7 @@
 package com.lightseablue.bookwebsite.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lightseablue.bookwebsite.dao.TableUserDao;
 import com.lightseablue.bookwebsite.entity.TableUser;
@@ -33,5 +34,12 @@ public class TableUserServiceImpl extends ServiceImpl<TableUserDao, TableUser> i
         QueryWrapper<TableUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(TableUser::getUStu, 1).like(TableUser::getUName, uName);
         return this.list(queryWrapper);
+    }
+
+    @Override
+    public boolean upDatePwd(Integer uId, String newPwd) {
+        UpdateWrapper<TableUser> tableUserUpdateWrapper = new UpdateWrapper<>();
+        tableUserUpdateWrapper.lambda().eq(TableUser::getUId, uId).set(TableUser::getUPwd, newPwd);
+        return this.update(tableUserUpdateWrapper);
     }
 }

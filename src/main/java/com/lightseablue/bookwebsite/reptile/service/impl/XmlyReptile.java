@@ -149,10 +149,6 @@ public class XmlyReptile implements Reptile {
                             .get();
                     JsonNode jsonNode = objectMapper.readTree(audio.body().text());
                     String audioSrc = jsonNode.get("data").get("src").asText();
-                    // TODO: 2020/12/24
-                    System.out.println("*******************"
-                            + audioSrc);
-
 
                     if ("null".equals(audioSrc.trim()) || "".equals(audioSrc.trim())) {
                         TableErrorRecords errorRecords = TableErrorRecords.builder()

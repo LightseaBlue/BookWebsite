@@ -34,6 +34,14 @@ public class TableAudioNameServiceImpl extends ServiceImpl<TableAudioNameDao, Ta
     @Autowired
     TableUserService tableUserService;
 
+
+    @Override
+    public boolean updateClickThroughRateByAudioNameId(String audioNameId, Long num) {
+        UpdateWrapper<TableAudioName> tableAudioNameUpdateWrapper = new UpdateWrapper<>();
+        tableAudioNameUpdateWrapper.lambda().eq(TableAudioName::getAudioNameId, audioNameId).set(TableAudioName::getAudioNameCount, num);
+        return this.update(tableAudioNameUpdateWrapper);
+    }
+
     @Override
     public boolean updateByAudioNameId(String audioNameId) {
         UpdateWrapper<TableAudioName> tableAudioNameUpdateWrapper = new UpdateWrapper<>();

@@ -8,9 +8,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lightseablue.bookwebsite.entity.TableAudioManagement;
 import com.lightseablue.bookwebsite.service.TableAudioManagementService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,7 +27,7 @@ import java.util.List;
  * @since 2020-12-24 17:26:27
  */
 @RestController
-@RequestMapping("tableAudioManagement")
+@RequestMapping("/tableAudioManagement")
 public class TableAudioManagementController extends ApiController {
     /**
      * 服务对象
@@ -29,58 +36,61 @@ public class TableAudioManagementController extends ApiController {
     private TableAudioManagementService tableAudioManagementService;
 
     /**
-     * 分页查询所有数据
+     * 上传音频
      *
-     * @param page                 分页对象
-     * @param tableAudioManagement 查询实体
-     * @return 所有数据
+     * @param tableAudioManagement
+     * @param request
+     * @return
      */
-    @GetMapping
-    public R selectAll(Page<TableAudioManagement> page, TableAudioManagement tableAudioManagement) {
-        return success(this.tableAudioManagementService.page(page, new QueryWrapper<>(tableAudioManagement)));
-    }
-
-    /**
-     * 通过主键查询单条数据
-     *
-     * @param id 主键
-     * @return 单条数据
-     */
-    @GetMapping("{id}")
-    public R selectOne(@PathVariable Serializable id) {
-        return success(this.tableAudioManagementService.getById(id));
-    }
-
-    /**
-     * 新增数据
-     *
-     * @param tableAudioManagement 实体对象
-     * @return 新增结果
-     */
-    @PostMapping
-    public R insert(@RequestBody TableAudioManagement tableAudioManagement) {
-        return success(this.tableAudioManagementService.save(tableAudioManagement));
-    }
-
-    /**
-     * 修改数据
-     *
-     * @param tableAudioManagement 实体对象
-     * @return 修改结果
-     */
-    @PutMapping
-    public R update(@RequestBody TableAudioManagement tableAudioManagement) {
-        return success(this.tableAudioManagementService.updateById(tableAudioManagement));
-    }
-
-    /**
-     * 删除数据
-     *
-     * @param idList 主键结合
-     * @return 删除结果
-     */
-    @DeleteMapping
-    public R delete(@RequestParam("idList") List<Long> idList) {
-        return success(this.tableAudioManagementService.removeByIds(idList));
+    @PostMapping("/upDateAudio")
+    @ResponseBody
+    public String upDateAudio(TableAudioManagement tableAudioManagement, HttpServletRequest request) {
+        List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
+        String parent = "Audio/" + tableAudioManagement.getAudioNameId();
+        File f = new File(parent);
+        if (!f.exists()) {
+            return "false";
+        }
+        //这里走的没有音频名,多文件上传
+        if ("".equals(tableAudioManagement.getAudioName())) {
+            for (MultipartFile file : files) {
+                long currentTimeMillis = System.currentTimeMillis();
+                String child = currentTimeMillis + ".mp3";
+                File dest = new File(parent, child);
+                String absolutePath = dest.getAbsolutePath();
+                try {
+                    //保存文件
+                    file.transferTo(Paths.get(absolutePath));
+                    //入数据库
+                    String fileName = file.getOriginalFilename();
+                    assert fileName != null;
+                    String substring = fileName.substring(0, fileName.indexOf("."));
+                    tableAudioManagement.setAudioName(substring);
+                    tableAudioManagement.setAudioUpdateTime(new Date());
+                    tableAudioManagement.setAudioAddress(parent + "/" + child);
+                    tableAudioManagementService.save(tableAudioManagement);
+                } catch (IllegalStateException | IOException e) {
+                    e.printStackTrace();
+                    return "false";
+                }
+            }
+            return tableAudioManagement.getAudioNameId();
+        } else {
+            String child = System.currentTimeMillis() + ".mp3";
+            File dest = new File(parent, child);
+            String absolutePath = dest.getAbsolutePath();
+            try {
+                //保存文件
+                files.get(0).transferTo(Paths.get(absolutePath));
+                //入数据库
+                tableAudioManagement.setAudioUpdateTime(new Date());
+                tableAudioManagement.setAudioAddress(parent + "/" + child);
+                tableAudioManagementService.save(tableAudioManagement);
+                return tableAudioManagement.getAudioNameId();
+            } catch (IllegalStateException | IOException e) {
+                e.printStackTrace();
+                return "false";
+            }
+        }
     }
 }

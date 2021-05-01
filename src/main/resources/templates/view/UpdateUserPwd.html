@@ -5,9 +5,53 @@
 </head>
 <body>
 <div class="con_ny" id="bookLists">
-    <h4 class="con_dqwz">您的当前位置：<a href="/">首页</a> >>创建音频</h4>
-    原密码：<input type="text">
-    新密码：<input type="password">
+    <h4 class="con_dqwz">您的当前位置：<a href="/">首页</a> >>密码修改</h4>
+    <div style="margin-top: 20px">
+        原 密 码：<input id="oldPwd" name="oldPwd"
+                     style="border: 2px solid #d2d2d2; background-color: transparent; width: 162px" type="text">
+        <span hidden="hidden" id="mes1" style="color: red">原密码有误...</span>
+    </div>
+    <div style="margin-top: 20px">
+        新 密 码：<input id="newPwd" name="newPwd"
+                     style="border: 2px solid #d2d2d2; background-color: transparent; width: 162px" type="password">
+    </div>
+    <div style="margin-top: 20px">
+        确认密码：<input id="pwd" style="border: 2px solid #d2d2d2; background-color: transparent; width: 162px"
+                    type="password">
+        <span hidden="hidden" id="mes2" style="color: red">与上密码不符</span>
+    </div>
+    <button style=" width: 71px;
+    height: 30px;
+    margin-top: 20px;
+    margin-left: 90px;" th:onclick="'upDatePwd('+${session.user.uId}+')'">确认修改
+    </button>
 </div>
+<script th:inline="javascript">
+    function upDatePwd(uid) {
+        var oldPwd = $('#oldPwd').val();
+        var newPwd = $('#newPwd').val();
+        var pwd = $('#pwd').val();
+        if (oldPwd == '' || newPwd == '' || pwd == '') {
+            alert("请检查信息......")
+        } else if (pwd != newPwd) {
+            document.getElementById('mes2').removeAttribute("hidden");
+        } else {
+            $.post("/tableUser/UpDatePwd", {
+                'oldPwd': oldPwd,
+                'newPwd': newPwd,
+                'uId': uid
+            }, function (data) {
+                if (data == 0) {
+                    document.getElementById('mes1').removeAttribute("hidden");
+                } else if (data == 2) {
+                    alert("服务器内部错误....");
+                } else {
+                    alert("修改成功......");
+                    window.location.href = "/logout";
+                }
+            });
+        }
+    }
+</script>
 </body>
 </html>

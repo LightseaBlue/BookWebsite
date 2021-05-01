@@ -22,65 +22,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/tableAudioType")
 public class TableAudioTypeController extends ApiController {
+
     /**
      * 服务对象
      */
     @Resource
     private TableAudioTypeService tableAudioTypeService;
 
-    /**
-     * 分页查询所有数据
-     *
-     * @param page           分页对象
-     * @param tableAudioType 查询实体
-     * @return 所有数据
-     */
-    @GetMapping
-    public R selectAll(Page<TableAudioType> page, TableAudioType tableAudioType) {
-        return success(this.tableAudioTypeService.page(page, new QueryWrapper<>(tableAudioType)));
-    }
-
-    /**
-     * 通过主键查询单条数据
-     *
-     * @param id 主键
-     * @return 单条数据
-     */
-    @GetMapping("{id}")
-    public R selectOne(@PathVariable Serializable id) {
-        return success(this.tableAudioTypeService.getById(id));
-    }
-
-    /**
-     * 新增数据
-     *
-     * @param tableAudioType 实体对象
-     * @return 新增结果
-     */
-    @PostMapping
-    public R insert(@RequestBody TableAudioType tableAudioType) {
-        return success(this.tableAudioTypeService.save(tableAudioType));
-    }
-
-    /**
-     * 修改数据
-     *
-     * @param tableAudioType 实体对象
-     * @return 修改结果
-     */
-    @PutMapping
-    public R update(@RequestBody TableAudioType tableAudioType) {
-        return success(this.tableAudioTypeService.updateById(tableAudioType));
-    }
-
-    /**
-     * 删除数据
-     *
-     * @param idList 主键结合
-     * @return 删除结果
-     */
-    @DeleteMapping
-    public R delete(@RequestParam("idList") List<Long> idList) {
-        return success(this.tableAudioTypeService.removeByIds(idList));
+    @PostMapping("/getAudioTypeByAllTypeId")
+    private List<TableAudioType> getAudioTypeByAllTypeId(Integer allTypeId) {
+        return tableAudioTypeService.getTableAudioTypes(allTypeId);
     }
 }

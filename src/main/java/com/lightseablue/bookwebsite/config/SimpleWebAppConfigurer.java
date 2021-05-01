@@ -6,13 +6,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 /**
  * 外部资源处理
+ *
+ * @author LightseaBlue
  */
 @Configuration
 public class SimpleWebAppConfigurer extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/Audio/**").addResourceLocations("file:E:/Java Project/bookwebsite/Audio/");
+        registry.addResourceHandler("/Audio/**")
+                .addResourceLocations("file:E:/Java Project/bookwebsite/Audio/");
+        registry.addResourceHandler("/User/**")
+                .addResourceLocations("file:E:/Java Project/bookwebsite/User/");
         super.addResourceHandlers(registry);
     }
 }

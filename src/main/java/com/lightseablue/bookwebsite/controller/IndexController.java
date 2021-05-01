@@ -12,11 +12,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -80,6 +86,7 @@ public class IndexController {
 
         //所有大类型和小类型
         modelAndView.addObject("bigTypes", allTypes);
+        request.getSession().setAttribute("bigTypes", allTypes);
         modelAndView.addObject("allTypes", allAudioTypes);
         //推荐喜欢或者排行榜
         modelAndView.addObject("youLikesOrTops", youLikesOrTops);
@@ -128,8 +135,6 @@ public class IndexController {
             modelAndView.addObject("thisPage", 1);
             return modelAndView;
         }
-        List<TableAllTypes> allTypes = tableAllTypesService.getAll();
-        modelAndView.addObject("bigTypes", allTypes);
         List<TableAudioNameDTO> tableAudioNameDtoS = tableAudioNameService.pageToList(tableAudioNamePage);
         modelAndView.addObject("bookLists", tableAudioNameDtoS);
         modelAndView.addObject("thisPage", thisPage + 1);
@@ -142,13 +147,13 @@ public class IndexController {
     }
 
     /**
-     * 通过书籍名或者作者名模糊查询
+     * 通过书籍名或者作者名模糊查询 跳转查询结果
      *
      * @return
      */
     @GetMapping("/search")
     public ModelAndView searchBooks(String searchText, Integer thisPage) {
-        ModelAndView modelAndView = null;
+        ModelAndView modelAndView;
         //作者名
         List<TableUser> tableUsers = tableUserService.getUsersLikeUname(searchText);
         List<Integer> allUid = null;
@@ -166,12 +171,50 @@ public class IndexController {
         return modelAndView;
     }
 
+    /**
+     * 跳转修改用户信息
+     *
+     * @param uId
+     * @return
+     */
+    @GetMapping("/toUpDateUser")
+    private ModelAndView toUpDateUser(Integer uId) {
+        ModelAndView modelAndView = new ModelAndView();
+        TableUser tableUser = tableUserService.getById(uId);
+        if (tableUser.getUPhoto() == null) {
+            tableUser.setUPhoto("img/Triple.png");
+        }
+        if (tableUser.getUEmail() == null || "".equals(tableUser.getUEmail())) {
+            tableUser.setUEmail("无");
+        }
+        modelAndView.addObject("user", tableUser);
+        modelAndView.setViewName("view/UpdateUser");
+        return modelAndView;
+    }
+
+    /**
+     * 跳转密码修改
+     *
+     * @return
+     */
+    @GetMapping("/toUpDateUserPwd")
+    private ModelAndView toUpDateUserPwd() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("view/UpdateUserPwd");
+        return modelAndView;
+    }
+
+    /**
+     * 跳转我的书籍主页
+     *
+     * @param uid
+     * @param thisPage
+     * @return
+     */
     @GetMapping("/upLoad")
     public ModelAndView toUpLoad(Integer uid, Integer thisPage) {
         Page<TableAudioName> tableAudioNamePage = tableAudioNameService.searchBooksByUid(uid, thisPage);
         ModelAndView modelAndView = setBookListResParam(tableAudioNamePage, thisPage, null);
-        List<TableAllTypes> allTypes = tableAllTypesService.getAll();
-        modelAndView.addObject("bigTypes", allTypes);
         modelAndView.addObject("uid", uid);
         modelAndView.setViewName("view/upLoad");
         return modelAndView;
@@ -182,21 +225,42 @@ public class IndexController {
         return "view/login";
     }
 
+    /**
+     * 跳转意见上传
+     *
+     * @return
+     */
     @GetMapping("/contactTheAdministrator")
     public ModelAndView toContactTheAdministrator() {
         ModelAndView modelAndView = new ModelAndView();
-        List<TableAllTypes> allTypes = tableAllTypesService.getAll();
-        modelAndView.addObject("bigTypes", allTypes);
         modelAndView.setViewName("view/ContactTheAdministrator");
         return modelAndView;
     }
 
+    /**
+     * 跳转图书创建
+     *
+     * @return
+     */
     @GetMapping("/createBook")
     public ModelAndView toCreateBook() {
         ModelAndView modelAndView = new ModelAndView();
-        List<TableAllTypes> tableAllTypes = tableAllTypesService.getAll();
-        modelAndView.addObject("bigTypes", tableAllTypes);
         modelAndView.setViewName("view/CreateBook");
+        return modelAndView;
+    }
+
+
+    /**
+     * 跳转音频上传界面
+     *
+     * @param tableAudioManagement
+     * @return
+     */
+    @GetMapping("/toCreateAudio")
+    public ModelAndView toCreateAudio(TableAudioManagement tableAudioManagement) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("view/CreateAudio");
+        modelAndView.addObject("tableAudioManagement", tableAudioManagement);
         return modelAndView;
     }
 
@@ -206,19 +270,20 @@ public class IndexController {
      * @param audioNameId
      * @return
      */
-    @GetMapping("/audioFull")
+    @RequestMapping("/audioFull")
     public ModelAndView toAudio(String audioNameId) {
         ModelAndView modelAndView = new ModelAndView();
         TableAudioName tableAudioName = tableAudioNameService.getById(audioNameId);
         TableUser tableUser = tableUserService.getById(tableAudioName.getUId());
         TableAudioNameDTO tableAudioNameDTO = tableAudioNameService.tableAudioNameToTableAudioNameDTO(tableAudioName, tableUser.getUName());
         List<TableAudioManagement> tableAudioManagements = tableAudioManagementService.findMusicListByAudioNameId(audioNameId);
+        //更新点击量
+        boolean b = tableAudioNameService.updateClickThroughRateByAudioNameId(audioNameId, tableAudioName.getAudioNameCount() + 1);
+        assert b;
         //查找月榜热度
         List<TableAudioNameDTO> monthTops = tableAudioNameService.monthTops();
         //周榜
         List<TableAudioNameDTO> weekTops = tableAudioNameService.weekTops();
-        List<TableAllTypes> allTypes = tableAllTypesService.getAll();
-        modelAndView.addObject("bigTypes", allTypes);
         modelAndView.addObject("tableAudioNameDTO", tableAudioNameDTO);
         modelAndView.addObject("tableAudioManagements", tableAudioManagements);
 

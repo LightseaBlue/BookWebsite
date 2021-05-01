@@ -15,10 +15,4 @@ import java.util.List;
  */
 @Repository
 public interface TableUserDao extends BaseMapper<TableUser> {
-
-    /**
-     * todo: sql很瞎
-     */
-    @Select("select * from table_audio_name where AUDIO_NAME_NAME like '%#{uName}%'")
-    List<TableUser> getUsersLikeUname(String uName);
 }

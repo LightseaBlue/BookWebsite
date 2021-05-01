@@ -6,8 +6,54 @@
 <body>
 <div class="con_ny" id="bookLists">
     <h4 class="con_dqwz">您的当前位置：<a href="/">首页</a> >>创建音频</h4>
-    音频名：<input type="text">
-    音频地址：<input type="text">
+    <h1 style="color: red">不填写音频名,默认多文件上传,取音频名做文件名</h1>
+    <form enctype="multipart/form-data" id="form" method="post">
+        <div style="margin-top: 20px">
+            音频名：<input id="audioName" name="audioName"
+                       style="border: 2px solid #d2d2d2; background-color: transparent; width: 162px"
+                       type="text">
+        </div>
+        <input name="uId" th:value="${session.user?.uId}" type="hidden">
+        <input name="audioNameId" th:value="${tableAudioManagement.audioNameId}" type="hidden">
+        <div style="margin-top: 20px">
+            音频地址：<input accept=".mp3" id="file" multiple name="file"
+                        style="border: 2px solid #d2d2d2; background-color: transparent; width: 162px"
+                        type="file">
+        </div>
+    </form>
+    <button onclick="createAudio()" style=" width: 71px;
+    height: 30px;
+    margin-top: 20px;
+    margin-left: 90px;">确认上传
+    </button>
 </div>
+<script>
+    function createAudio() {
+        var file = $('#file').val();
+        if (file == '') {
+            alert("请检查信息......");
+        } else {
+            var form = new FormData(document.getElementById('form'));
+            $.ajax({
+                url: "/tableAudioManagement/upDateAudio",
+                type: "post",
+                data: form,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data == "false") {
+                        alert("服务器内部错误....");
+                    } else {
+                        alert("上传成功,即将跳转书籍详情.....");
+                        window.location.href = "/audioFull?audioNameId=" + data;
+                    }
+                },
+                error: function (e) {
+                    alert("错误！！");
+                }
+            });
+        }
+    }
+</script>
 </body>
 </html>

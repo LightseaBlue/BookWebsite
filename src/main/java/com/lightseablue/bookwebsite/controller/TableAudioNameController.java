@@ -12,13 +12,21 @@ import com.lightseablue.bookwebsite.entity.TableUser;
 import com.lightseablue.bookwebsite.service.TableAllTypesService;
 import com.lightseablue.bookwebsite.service.TableAudioNameService;
 import com.lightseablue.bookwebsite.service.TableAudioTypeService;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,7 +35,7 @@ import java.util.List;
  * @author LightseaBlue
  * @since 2020-12-24 17:26:27
  */
-@RestController
+@Controller
 @RequestMapping("/tableAudioName")
 public class TableAudioNameController extends ApiController {
     /**
@@ -35,11 +43,39 @@ public class TableAudioNameController extends ApiController {
      */
     @Resource
     private TableAudioNameService tableAudioNameService;
-    @Resource
-    private TableAudioTypeService tableAudioTypeService;
-    @Resource
-    private TableAllTypesService tableAllTypesService;
 
+    @PostMapping("/upDateBook")
+    @ResponseBody
+    private String createBook(@RequestParam("file") MultipartFile file, TableAudioName tableAudioName) {
+        assert file.isEmpty();
+        String fileName = file.getOriginalFilename();
+        assert fileName != null;
+        String fileTyler = fileName.substring(fileName.lastIndexOf("."));
+        long currentTimeMillis = System.currentTimeMillis();
+        String parent = "Audio/" + currentTimeMillis;
+        String child = currentTimeMillis + fileTyler;
+        tableAudioName.setAudioNameDate(new Date());
+        tableAudioName.setAudioNameImg(parent + "/" + child);
+        tableAudioName.setAudioNameId(String.valueOf(currentTimeMillis));
+
+        File dest = new File(parent, child);
+
+        String absolutePath = dest.getAbsolutePath();
+        //判断文件父目录是否存在
+        if (!dest.getParentFile().exists()) {
+            dest.getParentFile().mkdir();
+        }
+        try {
+            //保存文件
+            file.transferTo(Paths.get(absolutePath));
+            boolean save = tableAudioNameService.save(tableAudioName);
+            assert save;
+            return tableAudioName.getAudioNameId();
+        } catch (IllegalStateException | IOException e) {
+            e.printStackTrace();
+            return "false";
+        }
+    }
     /**
      * 切换你的喜欢
      *

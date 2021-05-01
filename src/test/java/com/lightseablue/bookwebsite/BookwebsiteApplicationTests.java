@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -135,5 +136,14 @@ class BookwebsiteApplicationTests {
         message.setTo("1172893066@qq.com");
         message.setFrom("1172893066@qq.com");
         javaMailSender.send(message);
+    }
+
+    @Test
+    public void testBc() {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        TableUser tableUser = tableUserService.getById(1);
+        String a1 = passwordEncoder.encode("a");
+        System.out.println("========" + a1 + "----------");
+
     }
 }
