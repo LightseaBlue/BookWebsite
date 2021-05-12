@@ -164,7 +164,7 @@ public class IndexController {
             }
         }
         //书籍名
-        Page<TableAudioName> tableAudioNamePage = tableAudioNameService.searchLikeBooks(searchText, thisPage, allUid);
+        Page<TableAudioName> tableAudioNamePage = tableAudioNameService.searchLikeBooks(searchText, thisPage, 6, allUid, null, null, 1);
         modelAndView = setBookListResParam(tableAudioNamePage, thisPage, null);
         modelAndView.addObject("searchText", searchText);
         modelAndView.setViewName("view/SearchBooks");

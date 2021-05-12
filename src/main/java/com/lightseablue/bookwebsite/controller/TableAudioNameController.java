@@ -1,31 +1,25 @@
 package com.lightseablue.bookwebsite.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.ApiController;
-import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lightseablue.bookwebsite.dto.TableAudioNameDTO;
-import com.lightseablue.bookwebsite.entity.TableAllTypes;
 import com.lightseablue.bookwebsite.entity.TableAudioName;
 import com.lightseablue.bookwebsite.entity.TableUser;
 import com.lightseablue.bookwebsite.service.TableAllTypesService;
 import com.lightseablue.bookwebsite.service.TableAudioNameService;
 import com.lightseablue.bookwebsite.service.TableAudioTypeService;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.Assert;
+import com.lightseablue.bookwebsite.service.TableUserService;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +29,7 @@ import java.util.List;
  * @author LightseaBlue
  * @since 2020-12-24 17:26:27
  */
-@Controller
+@RestController
 @RequestMapping("/tableAudioName")
 public class TableAudioNameController extends ApiController {
     /**
@@ -43,9 +37,73 @@ public class TableAudioNameController extends ApiController {
      */
     @Resource
     private TableAudioNameService tableAudioNameService;
+    @Resource
+    private TableAudioTypeService tableAudioTypeService;
+    @Resource
+    private TableAllTypesService tableAllTypesService;
+    @Resource
+    private TableUserService tableUserService;
 
+    @PostMapping("/adminFindBooks")
+    private List<TableAudioNameDTO> adminFindBooks(String name, String allTypeId, String typeId, Integer stu, Integer thisPage) {
+        //模糊查找用户名
+        List<Integer> allUid = null;
+        if (name != null && !"".equals(name.trim())) {
+            List<TableUser> tableUsers = tableUserService.getUsersLikeUname(name);
+            if (tableUsers != null && tableUsers.size() > 0) {
+                allUid = new ArrayList<>();
+                for (TableUser tableAudioName : tableUsers) {
+                    allUid.add(tableAudioName.getUId());
+                }
+            }
+        }
+
+        //书籍名
+        Page<TableAudioName> tableAudioNamePage = tableAudioNameService.searchLikeBooks(name, thisPage, 20, allUid, allTypeId, typeId, stu);
+        List<TableAudioNameDTO> tableAudioNameDTOS = tableAudioNameService.pageToDto(tableAudioNamePage);
+
+        return tableAudioNameDTOS;
+    }
+
+    /**
+     * 管理员更新书籍
+     *
+     * @param audioNameId
+     * @param audioNameStatus
+     * @return
+     */
+    @PostMapping("/upDataBookStu")
+    private boolean upDataBookStu(String audioNameId, String audioNameStatus) {
+        if ("1".equals(audioNameStatus)) {
+            return tableAudioNameService.updateByAudioNameId(audioNameId);
+        } else {
+            return tableAudioNameService.updateByAudioNameIdToOk(audioNameId);
+        }
+    }
+
+    /**
+     * 管理员端无条件切换页数
+     *
+     * @param current
+     * @return
+     */
+    @PostMapping("/switchPageNumber")
+    private List<TableAudioNameDTO> switchPageNumber(int current) {
+        Page<TableAudioName> page = new Page<>(current, 20);
+        Page<TableAudioName> tableAudioNamePage = tableAudioNameService.page(page);
+        List<TableAudioNameDTO> tableAudioNameDTOS = tableAudioNameService.pageToDto(tableAudioNamePage);
+        return tableAudioNameDTOS;
+    }
+
+
+    /**
+     * 创建图书
+     *
+     * @param file
+     * @param tableAudioName
+     * @return
+     */
     @PostMapping("/upDateBook")
-    @ResponseBody
     private String createBook(@RequestParam("file") MultipartFile file, TableAudioName tableAudioName) {
         assert file.isEmpty();
         String fileName = file.getOriginalFilename();
@@ -76,6 +134,7 @@ public class TableAudioNameController extends ApiController {
             return "false";
         }
     }
+
     /**
      * 切换你的喜欢
      *
@@ -84,7 +143,11 @@ public class TableAudioNameController extends ApiController {
      */
     @GetMapping("/changeYouLike")
     public List<TableAudioNameDTO> changeYouLike(HttpServletRequest request) {
-        int thisNum = Integer.parseInt(request.getSession().getAttribute("thisNum").toString());
+        Object thisNumObject = request.getSession().getAttribute("thisNum");
+        int thisNum = 1;
+        if (thisNumObject != null) {
+            thisNum = Integer.parseInt(thisNumObject.toString());
+        }
         //查找全部排行榜的页数
         Object thisNum1 = request.getSession().getAttribute("allTopBooksNum");
         int allTopBooksNum = 1;
@@ -126,61 +189,5 @@ public class TableAudioNameController extends ApiController {
         //所有排行榜轮数
         request.getSession().setAttribute("allTopBooksNum", allTopBooksNum);
         return youLike;
-    }
-
-    /**
-     * 分页查询所有数据
-     *
-     * @param page           分页对象
-     * @param tableAudioName 查询实体
-     * @return 所有数据
-     */
-    @GetMapping
-    public R selectAll(Page<TableAudioName> page, TableAudioName tableAudioName) {
-        return success(this.tableAudioNameService.page(page, new QueryWrapper<>(tableAudioName)));
-    }
-
-    /**
-     * 通过主键查询单条数据
-     *
-     * @param id 主键
-     * @return 单条数据
-     */
-    @GetMapping("{id}")
-    public R selectOne(@PathVariable Serializable id) {
-        return success(this.tableAudioNameService.getById(id));
-    }
-
-    /**
-     * 新增数据
-     *
-     * @param tableAudioName 实体对象
-     * @return 新增结果
-     */
-    @PostMapping
-    public R insert(@RequestBody TableAudioName tableAudioName) {
-        return success(this.tableAudioNameService.save(tableAudioName));
-    }
-
-    /**
-     * 修改数据
-     *
-     * @param tableAudioName 实体对象
-     * @return 修改结果
-     */
-    @PutMapping
-    public R update(@RequestBody TableAudioName tableAudioName) {
-        return success(this.tableAudioNameService.updateById(tableAudioName));
-    }
-
-    /**
-     * 删除数据
-     *
-     * @param idList 主键结合
-     * @return 删除结果
-     */
-    @DeleteMapping
-    public R delete(@RequestParam("idList") List<Long> idList) {
-        return success(this.tableAudioNameService.removeByIds(idList));
     }
 }

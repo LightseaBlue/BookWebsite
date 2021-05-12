@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="layui/css/layui.css" rel="stylesheet"/>
+    <script src="layui/layui.js"></script>
+    <script src="js/jquery-1.10.1.min.js"></script>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>书籍管理</legend>
+</fieldset>
+<div class="cBody" style="height: 100%;">
+    <div class="console">
+        <form action="" class="layui-form" type="post">
+            <div class="layui-form-item">
+                <div class="layui-input-inline">
+                    <input autocomplete="off" class="layui-input" id="name" name="name"
+                           placeholder="输入书籍名称/用户名" type="text">
+                </div>
+                <div class="layui-input-inline"
+                     onchange="allTypesChange(this.options[this.options.selectedIndex].value)">
+                    <select id="allTypeId" lay-filter="allTypeId" name="allTypeId">
+                        <option value="">请选择分类类型....</option>
+                        <option th:each="item:${allTypes}" th:value="${item.allTypeId}">
+                            [[${item.allTypeName}]]
+                        </option>
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                    <select id="TypeId" lay-filter="TypeId" name="TypeId">
+                        <option value="">请选择书籍类型.....</option>
+                        <option th:each="item:${tableAudioTypes}" th:value="${item.audioTypeId}">
+                            [[${item.audioTypeName}]]
+                        </option>
+                    </select>
+                </div>
+                <div class="layui-input-inline">
+                    <select id="Stu" lay-filter="Stu" name="Stu">
+                        <option value="">请选择状态.....</option>
+                        <option value="1">正常</option>
+                        <option value="2">下架</option>
+                    </select>
+                </div>
+                <button class="layui-btn" lay-filter="formDemo" lay-submit>检索</button>
+            </div>
+        </form>
+    </div>
+
+    <table class="layui-table" lay-skin="line" style="height: auto ;
+    white-space: normal;">
+        <thead>
+        <tr>
+            <th>书籍名称</th>
+            <th>书籍图片</th>
+            <th>分类类型</th>
+            <th>书籍类型</th>
+            <th>播讲人</th>
+            <th>创建时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        <tr th:each="item,i:${tableAudioNameDTOS}">
+            <td th:text="${item.audioNameName}"></td>
+            <td><img th:src="${item.audioNameImg}"></td>
+            <td th:text="${item.allTypeName}"></td>
+            <td th:text="${item.audioTypeName}"></td>
+            <td th:text="${item.UName}"></td>
+            <td th:text="${item.audioNameDate}"></td>
+            <td th:id="'audioStu'+${i.index}" th:text="${item.audioNameStatus}=='1'?'正常':'下架'"></td>
+            <td>
+                <button class="layui-btn layui-btn-xs" th:id="'stuBtn'+${i.index}"
+                        th:onclick="upDateStu([[${item.audioNameId}]],[[${item.audioNameStatus}]],[[${i.index}]])"
+                        th:text="${item.audioNameStatus}=='1'?'下架':'上架'"></button>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- layUI 分页模块 -->
+    <div id="pages"></div>
+
+    <div style="margin-bottom: 50px"></div>
+    <script th:inline="javascript">
+        var limit = 20;
+        var total = [[${total}]];
+
+        //联动
+        layui.use(['layer', 'form'], function () {
+            var layer = layui.layer,
+                form = layui.form;
+
+            form.on('select(allTypeId)', function (data) {
+                $.post("/tableAudioType/getAudioTypeByAllTypeId", {
+                    'allTypeId': data.value
+                }, function (data) {
+                    // alert("ok");
+                    // console.log(data);
+                    var audioTypeHtml = '<option value="">请选择书籍类型.....</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        audioTypeHtml += '<option value="' + data[i].audioTypeId + '">' + data[i].audioTypeName + '</option>'
+                    }
+                    document.getElementById('TypeId').innerHTML = audioTypeHtml;
+                    form.render('select');
+                });
+            });
+        });
+
+        //表单
+        layui.use('form', function () {
+            var form = layui.form;
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                var name = $('#name').val();
+                var allTypeId = $('#allTypeId').val();
+                var typeId = $('#TypeId').val();
+                var stu = $('#Stu').val();
+                // alert(name+"     "+allTypeId+"       "+typeId);
+                if (name == undefined || name == '' && allTypeId == '' && typeId == '' && stu == '') {
+                    layer.msg("所有条件都为空....");
+                    return false;
+                }
+                // alert(name);
+                $.post("/tableAudioName/adminFindBooks", {
+                    "name": name,
+                    "allTypeId": allTypeId,
+                    "typeId": typeId,
+                    "thisPage": 1,
+                    "stu": stu
+                }, function (data) {
+                    if (data == null || data.length <= 0) {
+                        layer.msg("查找不存在.......");
+                        return false;
+                    }
+                    total = data[0].total;
+                    alert(total);
+                    setTable(data);
+                    layui.use('laypage', function () {
+                        var laypage = layui.laypage;
+                        laypage.render({
+                            elem: 'pages',
+                            count: total,
+                            limit: limit,
+                            layout: ['count', 'prev', 'page', 'next', 'skip'],
+                            jump: function (obj, first) {
+                                if (!first) {
+                                    var page = obj.curr;
+                                    $.post("/tableAudioName/adminFindBooks", {
+                                        "name": name,
+                                        "allTypeId": allTypeId,
+                                        "typeId": typeId,
+                                        "thisPage": page,
+                                        "stu": stu
+                                    }, function (data) {
+                                        setTable(data);
+                                    });
+
+                                }
+                            }
+                        });
+                    });
+                })
+                return false;
+            });
+        });
+
+        /**
+         * 分页
+         */
+        layui.use('laypage', function () {
+            var laypage = layui.laypage;
+            //总页数大于页码总数
+            laypage.render({
+                elem: 'pages',
+                count: total,
+                limit: limit,
+                layout: ['count', 'prev', 'page', 'next', 'skip'],
+                jump: function (obj, first) {
+                    if (!first) {
+                        //obj包含了当前分页的所有参数，比如：
+                        // console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                        // console.log(obj.limit); //得到每页显示的条数
+                        var page = obj.curr;
+                        $.post("/tableAudioName/switchPageNumber", {
+                            "current": page
+                        }, function (data) {
+                            setTable(data);
+                        });
+                    }
+                }
+            });
+        });
+
+        function setTable(data) {
+            var html = "";
+            if (data == null || data.length <= 0) {
+                layer.msg("错误....");
+                return;
+            }
+
+            for (var i = 0; i < data.length; i++) {
+                html += "<tr>\n" +
+                    "<td>" + data[i].audioNameName + "</td>\n" +
+                    "<td><img src='" + data[i].audioNameImg + "'></td>\n" +
+                    "<td>" + data[i].allTypeName + "</td>\n" +
+                    "<td>" + data[i].audioTypeName + "</td>\n" +
+                    "<td>" + data[i].uname + "</td>\n" +
+                    "<td>" + data[i].audioNameDate + "</td>\n";
+                if (data[i].audioNameStatus == 1) {
+                    html += "<td id='audioStu" + i +
+                        "'>正常</td>" +
+                        "<td>\n" +
+                        "<button id='stuBtn" + i +
+                        "' class=\"layui-btn layui-btn-xs\" " +
+                        "onclick=\"upDateStu(" + data[i].audioNameId + ',' + data[i].audioNameStatus + ',' + i + ")\">" +
+                        "下架</button>\n" +
+                        "</td>"
+                } else {
+                    html += "<td id='audioStu" + i +
+                        "'>下架</td>" +
+                        "<td>" +
+                        "<button id='stuBtn" + i +
+                        "' class=\"layui-btn layui-btn-xs\" onclick=\"upDateStu(" + data[i].audioNameId + ',' + data[i].audioNameStatus + ',' + i + ")\">上架</button>\n" +
+                        "</td>"
+                }
+                html += "</tr>"
+            }
+            document.getElementById("tbody").innerHTML = html;
+        }
+
+        //修改
+        function upDateStu(audioNameID, audioNameStatus, index) {
+            // alert(audioNameID+"     "+audioNameStatus+"       "+index);
+            $.post("/tableAudioName/upDataBookStu", {
+                "audioNameId": audioNameID,
+                "audioNameStatus": audioNameStatus
+            }, function (data) {
+                if (data == true) {
+                    layer.msg("成功");
+                    var stuBtnId = 'stuBtn' + index;
+                    var audioStuId = "audioStu" + index;
+                    var stuBtn = $('#stuBtn' + index);
+                    if (audioNameStatus == 2) {
+                        stuBtn.attr("onclick", "upDateStu(" + audioNameID + ',' + 1 + "," + index + ")");
+                        document.getElementById(stuBtnId).innerHTML = "下架";
+                        document.getElementById(audioStuId).innerHTML = "正常";
+                    } else {
+                        stuBtn.attr("onclick", "upDateStu(" + audioNameID + ',' + 2 + "," + index + ")");
+                        document.getElementById(stuBtnId).innerHTML = "上架";
+                        document.getElementById(audioStuId).innerHTML = "下架";
+                    }
+                } else {
+                    layer.msg("请稍后重试");
+                }
+            })
+
+        }
+    </script>
+</div>
+
+</body>
+</html>

@@ -10,12 +10,17 @@ import com.lightseablue.bookwebsite.dao.TableAudioNameDao;
 import com.lightseablue.bookwebsite.dto.TableAudioNameDTO;
 import com.lightseablue.bookwebsite.entity.TableAudioName;
 import com.lightseablue.bookwebsite.entity.TableUser;
+import com.lightseablue.bookwebsite.service.TableAllTypesService;
 import com.lightseablue.bookwebsite.service.TableAudioNameService;
+import com.lightseablue.bookwebsite.service.TableAudioTypeService;
 import com.lightseablue.bookwebsite.service.TableUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,6 +38,10 @@ public class TableAudioNameServiceImpl extends ServiceImpl<TableAudioNameDao, Ta
     TableAudioNameDao dao;
     @Autowired
     TableUserService tableUserService;
+    @Resource
+    private TableAllTypesService tableAllTypesService;
+    @Resource
+    private TableAudioTypeService tableAudioTypeService;
 
 
     @Override
@@ -46,6 +55,13 @@ public class TableAudioNameServiceImpl extends ServiceImpl<TableAudioNameDao, Ta
     public boolean updateByAudioNameId(String audioNameId) {
         UpdateWrapper<TableAudioName> tableAudioNameUpdateWrapper = new UpdateWrapper<>();
         tableAudioNameUpdateWrapper.lambda().eq(TableAudioName::getAudioNameId, audioNameId).set(TableAudioName::getAudioNameStatus, 2);
+        return this.update(tableAudioNameUpdateWrapper);
+    }
+
+    @Override
+    public boolean updateByAudioNameIdToOk(String audioNameId) {
+        UpdateWrapper<TableAudioName> tableAudioNameUpdateWrapper = new UpdateWrapper<>();
+        tableAudioNameUpdateWrapper.lambda().eq(TableAudioName::getAudioNameId, audioNameId).set(TableAudioName::getAudioNameStatus, 1);
         return this.update(tableAudioNameUpdateWrapper);
     }
 
@@ -109,7 +125,7 @@ public class TableAudioNameServiceImpl extends ServiceImpl<TableAudioNameDao, Ta
     public Page<TableAudioName> searchAllBooksByType(int allTypeId, int thisPage) {
         QueryWrapper<TableAudioName> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(TableAudioName::getAllTypeId, allTypeId).eq(TableAudioName::getAudioNameStatus, 1);
-        Page<TableAudioName> page = setBookListPage(thisPage);
+        Page<TableAudioName> page = setBookListPage(thisPage, 6);
         return this.page(page, queryWrapper);
     }
 
@@ -117,18 +133,31 @@ public class TableAudioNameServiceImpl extends ServiceImpl<TableAudioNameDao, Ta
     public Page<TableAudioName> searchAllBooksByAudioTypeId(Integer audioTypeId, Integer thisPage) {
         QueryWrapper<TableAudioName> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(TableAudioName::getAudioTypeId, audioTypeId).eq(TableAudioName::getAudioNameStatus, 1);
-        Page<TableAudioName> page = setBookListPage(thisPage);
+        Page<TableAudioName> page = setBookListPage(thisPage, 6);
         return this.page(page, queryWrapper);
     }
 
     @Override
-    public Page<TableAudioName> searchLikeBooks(String bookName, Integer thisPage, List<Integer> uid) {
+    public Page<TableAudioName> searchLikeBooks(String bookName, Integer thisPage, Integer size,
+                                                List<Integer> uid, String allTypeId, String typeId, Integer stu) {
         QueryWrapper<TableAudioName> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(TableAudioName::getAudioNameStatus, 1).like(TableAudioName::getAudioNameName, bookName);
+        if (allTypeId != null && !"".equals(allTypeId)) {
+            queryWrapper.lambda().eq(TableAudioName::getAllTypeId, allTypeId);
+        }
+        if (typeId != null && !"".equals(typeId)) {
+            queryWrapper.lambda().eq(TableAudioName::getAudioTypeId, typeId);
+        }
+        if (stu != null) {
+            queryWrapper.lambda().eq(TableAudioName::getAudioNameStatus, stu);
+        }
+        if (bookName != null && !"".equals(bookName)) {
+            queryWrapper.lambda().eq(TableAudioName::getAudioNameStatus, 1).like(TableAudioName::getAudioNameName, bookName);
+        }
         if (uid != null && uid.size() > 0) {
             queryWrapper.lambda().or().in(TableAudioName::getUId, uid);
         }
-        Page<TableAudioName> tableAudioNamePage = setBookListPage(thisPage);
+
+        Page<TableAudioName> tableAudioNamePage = setBookListPage(thisPage, size);
         return this.page(tableAudioNamePage, queryWrapper);
     }
 
@@ -136,14 +165,14 @@ public class TableAudioNameServiceImpl extends ServiceImpl<TableAudioNameDao, Ta
     public Page<TableAudioName> searchBooksByUid(Integer uid, Integer thisPage) {
         QueryWrapper<TableAudioName> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(TableAudioName::getUId, uid).eq(TableAudioName::getAudioNameStatus, 1).orderByDesc(TableAudioName::getAudioNameCount);
-        Page<TableAudioName> tableAudioNamePage = setBookListPage(thisPage);
+        Page<TableAudioName> tableAudioNamePage = setBookListPage(thisPage, 6);
         return this.page(tableAudioNamePage, queryWrapper);
     }
 
-    private Page<TableAudioName> setBookListPage(Integer thisPage) {
+    private Page<TableAudioName> setBookListPage(Integer thisPage, Integer size) {
         Page<TableAudioName> page = new Page<>();
         page.setCurrent(thisPage);
-        page.setSize(6);
+        page.setSize(size);
         return page;
     }
 
@@ -171,8 +200,23 @@ public class TableAudioNameServiceImpl extends ServiceImpl<TableAudioNameDao, Ta
         tableAudioNameDTO.setAudioNameWriter(tableAudioName.getAudioNameWriter());
         tableAudioNameDTO.setAudioNameCount(tableAudioName.getAudioNameCount());
         tableAudioNameDTO.setUId(tableAudioName.getUId());
+        tableAudioNameDTO.setAudioNameStatus(tableAudioName.getAudioNameStatus());
         tableAudioNameDTO.setAudioNameDate(tableAudioName.getAudioNameDate());
         tableAudioNameDTO.setUName(uName);
         return tableAudioNameDTO;
+    }
+
+    @Override
+    public List<TableAudioNameDTO> pageToDto(IPage<TableAudioName> tableAudioNamePage) {
+        List<TableAudioNameDTO> tableAudioNameDTOS = this.pageToList(tableAudioNamePage);
+        tableAudioNameDTOS.forEach(e -> {
+            String allTypeName = tableAllTypesService.getById(e.getAllTypeId()).getAllTypeName();
+            e.setAllTypeName(allTypeName);
+            //todo: 这种方法太憨
+            e.setTotal(tableAudioNamePage.getTotal());
+            String audioTypeName = tableAudioTypeService.getById(e.getAudioTypeId()).getAudioTypeName();
+            e.setAudioTypeName(audioTypeName);
+        });
+        return tableAudioNameDTOS;
     }
 }

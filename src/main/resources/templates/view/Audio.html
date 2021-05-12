@@ -21,7 +21,7 @@
             <div class="none" style="height:15px;">
                 <a sec:authorize="isAuthenticated()"
                    style="color: red;font-size: 23px;"
-                   th:if="${session.user.uName==tableAudioNameDTO.uName}"
+                   th:if="${session.user.UId==tableAudioNameDTO.UId}"
                    th:href="'javascript:delAudioName('+${tableAudioNameDTO.audioNameId}+')'">
                     删除
                 </a>
@@ -111,7 +111,7 @@
                                 <ul style="margin-top: 15px">
                                     <li style="height: 30px; width: 732px; font-size: 10px"
                                         th:each="item,i:${tableAudioManagements}">
-                                        <a th:href="|javascript:switchMusic([[${item.audioNameId}]],[[${item.audioId}]])|"
+                                        <a th:href="'javascript:switchMusic('+${item.audioNameId}+','+${item.audioId}+')'"
                                            th:text="${item.audioName}+'      '+${item.audioUpdateTime}"></a>
                                         <a style="color: red"
                                            th:href="'/file/download?audioAddress='+${item.audioAddress}">
@@ -120,7 +120,7 @@
 
                                         <a sec:authorize="isAuthenticated()"
                                            style="color: black"
-                                           th:if="${session.user.uName==tableAudioNameDTO.uName}"
+                                           th:if="${session.user.UId==tableAudioNameDTO.UId}"
                                            th:href="|javascript:delAudio([[${item.audioId}]])|">
                                             删除
                                         </a>

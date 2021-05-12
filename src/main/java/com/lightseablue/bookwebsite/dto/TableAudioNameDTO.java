@@ -19,4 +19,9 @@ import com.lightseablue.bookwebsite.entity.TableAudioName;
 public class TableAudioNameDTO extends TableAudioName {
     private static final long serialVersionUID = -3034505020475491394L;
     private String uName;
+    private String allTypeName;
+    private String audioTypeName;
+
+    //分页时使用
+    private Long total;
 }

@@ -37,6 +37,14 @@ public interface TableAudioNameService extends IService<TableAudioName> {
     boolean updateByAudioNameId(String audioNameId);
 
     /**
+     * 恢复 书籍状态
+     *
+     * @param audioNameId
+     * @return
+     */
+    boolean updateByAudioNameIdToOk(String audioNameId);
+
+    /**
      * 月榜前五
      *
      * @return
@@ -108,7 +116,7 @@ public interface TableAudioNameService extends IService<TableAudioName> {
      * @param uid
      * @return
      */
-    Page<TableAudioName> searchLikeBooks(String bookName, Integer thisPage, List<Integer> uid);
+    Page<TableAudioName> searchLikeBooks(String bookName, Integer thisPage, Integer size, List<Integer> uid, String allTypeId, String typeId, Integer stu);
 
     /**
      * 根据播讲人查找
@@ -127,11 +135,19 @@ public interface TableAudioNameService extends IService<TableAudioName> {
     List<TableAudioNameDTO> pageToList(IPage<TableAudioName> tableAudioNameIPage);
 
     /**
-     * 转dto
+     * 用户端需要的转dto
      *
      * @param tableAudioName
      * @param uName
      * @return
      */
     TableAudioNameDTO tableAudioNameToTableAudioNameDTO(TableAudioName tableAudioName, String uName);
+
+    /**
+     * 管理员端用到的
+     *
+     * @param tableAudioNamePage
+     * @return
+     */
+    List<TableAudioNameDTO> pageToDto(IPage<TableAudioName> tableAudioNamePage);
 }

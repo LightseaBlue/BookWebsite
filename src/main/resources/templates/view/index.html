@@ -261,7 +261,7 @@
 
     //切换推荐
     function changeYouLike() {
-        $.get("tableAudioName/changeYouLike", {}, function (data) {
+        $.get("/tableAudioName/changeYouLike", {}, function (data) {
             $('#youLike').html("");
             for (var i = 0; i < data.length; i++) {
                 $('#youLike').append(

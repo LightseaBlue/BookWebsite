@@ -44,7 +44,7 @@ public class TableUserController extends ApiController {
      * @return
      */
     @PostMapping("upDateUserMes")
-    private String upDateUserMes(MultipartFile file, TableUser tableUser) {
+    private String upDateUserMes(MultipartFile file, TableUser tableUser, HttpServletRequest request) {
         if (file != null && file.getSize() != 0) {
             String fileName = file.getOriginalFilename();
             assert fileName != null;
@@ -73,6 +73,8 @@ public class TableUserController extends ApiController {
             }
         } else {
             boolean save = tableUserService.updateById(tableUser);
+            assert save;
+            request.getSession().setAttribute("user", tableUserService.getById(tableUser.getUId()));
             return "true";
         }
     }

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="layui/css/layui.css" rel="stylesheet"/>
+    <script src="layui/layui.js"></script>
+    <script src="js/jquery-1.10.1.min.js"></script>
+</head>
+<body>
+<form action="" class="layui-form" style="margin: 80px" type="post">
+    <div class="layui-form-item">
+        <div class="layui-form-item">
+            <label class="layui-form-label">原密码</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" id="oldPwd" name="oldPwd"
+                       placeholder="输入原密码" type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" id="newPwd"
+                       placeholder="输入原密码" type="password">
+            </div>
+        </div>
+        <input id="aId" th:value="${uId}" type="hidden">
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认密码</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" id="newPwd2" name="newPwd"
+                       placeholder="确认密码" type="password">
+            </div>
+        </div>
+        <button class="layui-btn" lay-filter="formDemo" lay-submit style="margin-left: 70px">确认修改</button>
+    </div>
+</form>
+<script>
+    layui.use('form', function () {
+        var form = layui.form;
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            var oldPwd = $('#oldPwd').val();
+            var newPwd = $('#newPwd').val();
+            var newPwd2 = $('#newPwd2').val();
+            var aId = $('#aId').val();
+            $('#uId').val()
+            if (oldPwd == '' || newPwd == '' || newPwd2 == '') {
+                layer.msg("请确认填写的信息.....");
+                return false;
+            }
+            if (newPwd.trim() != newPwd2.trim()) {
+                layer.msg("两次填写的密码不一样......");
+                return false;
+            }
+            $.post("/tableAdmin/upDateAdminPwd", {
+                "oldPwd": oldPwd,
+                "newPwd": newPwd2,
+                "aId": aId
+            }, function (data) {
+                if (data == 1) {
+                    alert("修改成功.....");
+                    top.location.href = "/adminLogout";
+                } else if (data == 2) {
+                    layer.msg("原密码有误....");
+                } else if (data == 3) {
+                    layer.msg("服务器发生错误...")
+                }
+            });
+            return false;
+        })
+    })
+</script>
+</body>
+</html>
