@@ -18,6 +18,8 @@ public class SimpleWebAppConfigurer extends WebMvcConfigurerAdapter {
                 .addResourceLocations("file:E:/Java Project/bookwebsite/Audio/");
         registry.addResourceHandler("/User/**")
                 .addResourceLocations("file:E:/Java Project/bookwebsite/User/");
+        registry.addResourceHandler("/Admin/**")
+                .addResourceLocations("file:E:/Java Project/bookwebsite/Admin/");
         super.addResourceHandlers(registry);
     }
 }

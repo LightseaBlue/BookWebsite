@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="utf-8">
+<head th:replace="back/index :: Head">
     <title></title>
-    <link href="layui/css/layui.css" rel="stylesheet"/>
-    <script src="layui/layui.js"></script>
-    <script src="js/jquery-1.10.1.min.js"></script>
 </head>
 <body>
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
@@ -75,7 +71,6 @@
                 <button class="layui-btn layui-btn-xs" th:id="'stuBtn'+${i.index}"
                         th:onclick="upDateStu([[${item.audioNameId}]],[[${item.audioNameStatus}]],[[${i.index}]])"
                         th:text="${item.audioNameStatus}=='1'?'下架':'上架'"></button>
-                </button>
             </td>
         </tr>
         </tbody>

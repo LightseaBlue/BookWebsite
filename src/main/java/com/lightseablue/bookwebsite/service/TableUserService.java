@@ -1,6 +1,8 @@
 package com.lightseablue.bookwebsite.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.lightseablue.bookwebsite.entity.TableAdmin;
 import com.lightseablue.bookwebsite.entity.TableUser;
 
 import java.util.List;
@@ -12,6 +14,25 @@ import java.util.List;
  * @since 2020-12-24 17:26:30
  */
 public interface TableUserService extends IService<TableUser> {
+
+    /**
+     * 管理员更新用户状态
+     *
+     * @param uId
+     * @param uStu
+     * @return
+     */
+    boolean upDateUserStu(Integer uId, Integer uStu);
+
+    /**
+     * 根据用户名模糊查询  分页
+     *
+     * @param curr
+     * @param name
+     * @return
+     */
+    Page<TableUser> getPageUsers(Long curr, String name, Integer stu);
+
     /**
      * 根据名字获取
      *
@@ -32,7 +53,7 @@ public interface TableUserService extends IService<TableUser> {
      * 修改密码
      *
      * @param uId
-     * @param newPed
+     * @param newPwd
      * @return
      */
     boolean upDatePwd(Integer uId, String newPwd);

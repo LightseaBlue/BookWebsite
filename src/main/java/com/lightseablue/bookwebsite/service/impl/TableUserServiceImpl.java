@@ -2,8 +2,10 @@ package com.lightseablue.bookwebsite.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lightseablue.bookwebsite.dao.TableUserDao;
+import com.lightseablue.bookwebsite.entity.TableAdmin;
 import com.lightseablue.bookwebsite.entity.TableUser;
 import com.lightseablue.bookwebsite.service.TableUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,26 @@ import java.util.List;
 public class TableUserServiceImpl extends ServiceImpl<TableUserDao, TableUser> implements TableUserService {
     @Autowired
     TableUserDao tableUserDao;
+
+    @Override
+    public boolean upDateUserStu(Integer uId, Integer uStu) {
+        UpdateWrapper<TableUser> tableUserUpdateWrapper = new UpdateWrapper<>();
+        tableUserUpdateWrapper.lambda().eq(TableUser::getUId, uId).set(TableUser::getUStu, uStu);
+        return this.update(tableUserUpdateWrapper);
+    }
+
+    @Override
+    public Page<TableUser> getPageUsers(Long curr, String name, Integer stu) {
+        Page<TableUser> tableUserPage = new Page<>(curr, 1);
+        QueryWrapper<TableUser> tableUserQueryWrapper = new QueryWrapper<>();
+        if (stu != null) {
+            tableUserQueryWrapper.lambda().eq(TableUser::getUStu, stu);
+        }
+        if (name != null && !"".equals(name)) {
+            tableUserQueryWrapper.lambda().like(TableUser::getUName, name);
+        }
+        return this.page(tableUserPage, tableUserQueryWrapper);
+    }
 
     @Override
     public TableUser getUserByName(String userName) {

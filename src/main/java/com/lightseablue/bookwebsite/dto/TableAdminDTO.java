@@ -17,5 +17,9 @@ import com.lightseablue.bookwebsite.entity.TableAdmin;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(value = "table_admin数据传输对象", description = "请求/响应参数")
 public class TableAdminDTO extends TableAdmin {
-
+    private static final long serialVersionUID = -9113418679153694368L;
+    /**
+     * 分页
+     */
+    private Long total;
 }

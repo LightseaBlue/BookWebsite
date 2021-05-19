@@ -1,114 +1,228 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title></title>
-	<link href="layui/css/layui.css" rel="stylesheet"/>
-	<script src="layui/layui.js"></script>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="back/index :: Head">
+    <title></title>
 </head>
 <body>
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-	<legend>管理员管理</legend>
+    <legend>管理员管理</legend>
 </fieldset>
 <div class="cBody" style="height: 100%;">
-	<div class="console">
-		<form action="" class="layui-form">
-			<div class="layui-form-item">
-				<div class="layui-input-inline">
-					<input autocomplete="off" class="layui-input" lay-verify="required" name="name"
-						   placeholder="输入书籍名称/用户名" required type="text">
-				</div>
+    <div class="console">
+        <form action="" class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-input-inline">
+                    <input autocomplete="off" class="layui-input" id="adminName" name="adminName"
+                           placeholder="输入管理员名" required type="text">
+                </div>
 
-				<div class="layui-input-inline">
-					<select id="cityid" lay-filter="cityid" name="cityid">
-						<option>请选择.....</option>
-						<option value="0">超级管理员</option>
-						<option value="1">用户管理员</option>
-						<option value="2">资源管理员</option>
-					</select>
-				</div>
-				<button class="layui-btn" lay-filter="formDemo" lay-submit>检索</button>
-			</div>
-		</form>
-	</div>
+                <div class="layui-input-inline">
+                    <select id="adminStu" lay-filter="adminStu" name="adminStu">
+                        <option value="">请选择.....</option>
+                        <option value="0">超级管理员</option>
+                        <option value="2">用户管理员</option>
+                        <option value="1">资源管理员</option>
+                        <option value="3">离职</option>
+                    </select>
+                </div>
+                <button class="layui-btn" lay-filter="formDemo" lay-submit>检索</button>
+            </div>
+        </form>
+    </div>
 
-	<table class="layui-table" lay-skin="line" style="height: 100%; width: 100%;">
-		<thead>
-		<tr>
-			<th>管理姓名</th>
-			<th>管理员头像</th>
-			<th>管理员状态</th>
-			<th>操作</th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr>
-			<td>LightseaBlue</td>
-			<td>*</td>
-			<td>用户管理员</td>
-			<td>
-				<button class="layui-btn layui-btn-xs" onclick="updateBut()">离职</button>
-				<button class="layui-btn layui-btn-xs" onclick="specificationsBut()">修改</button>
-			</td>
-		</tr>
-		</tbody>
-	</table>
+    <table class="layui-table" lay-skin="line" style="height: 100%; width: 100%;">
+        <thead>
+        <tr>
+            <th>管理姓名</th>
+            <th>管理员头像</th>
+            <th>管理员状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        <tr th:each="item,i:${admins}">
+            <td th:text="${item.AName}"></td>
+            <td><img th:src="${item.AImg}"></td>
+            <td>
+                <div class="layui-input-inline">
+                    <label>
+                        <select lay-filter="adminStu" name="adminStu" th:id="'adminStu'+${i.index}">
+                            <option th:selected="${item.AStu eq 0}" value="0">超级管理员</option>
+                            <option th:selected="${item.AStu eq 2}" value="2">用户管理员</option>
+                            <option th:selected="${item.AStu eq 1}" value="1">资源管理员</option>
+                            <option th:selected="${item.AStu eq 3}" value="3">离职</option>
+                        </select>
+                    </label>
+                </div>
+            </td>
+            <td>
+                <button class="layui-btn layui-btn-xs"
+                        th:id="'upDateBtn'+${i.index}"
+                        th:onclick="'upDateAdmin('+${item.AId}+','+${item.AStu}+','+${i.index}+')'">修改
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-	<!-- layUI 分页模块 -->
-	<div id="pages"></div>
-	<script>
-		layui.use('laypage', function () {
-			var laypage = layui.laypage;
+    <!-- layUI 分页模块 -->
+    <div id="pages"></div>
 
-			//总页数大于页码总数
-			laypage.render({
-				elem: 'pages',
-				count: 100,
-				layout: ['count', 'prev', 'page', 'next', 'limit', 'skip'],
-				jump: function (obj) {
-					// alert(obj);
 
-				}
-			});
-		});
+    <div style="margin-bottom: 50px"></div>
+    <script th:inline="javascript">
+        var limit = 1;
+        var total = [[${total}]];
 
-		//修改规格
-		function specificationsBut() {
-			layui.use('layer', function () {
-				var layer = layui.layer;
+        function upDateAdmin(AId, AStu, AStuId) {
+            console.log(AId + "       " + AStu + "          " + AStuId);
+            var adminStu = $("#adminStu" + AStuId).val();
+            alert(adminStu);
+            if (adminStu == AStu) {
+                layer.msg("无更新内容........");
+                return;
+            }
+            $.post("/tableAdmin/upDateAdminStu", {
+                "aId": AId,
+                "aStu": adminStu
+            }, function (data) {
+                if (data == true) {
+                    layer.msg("修改成功......");
+                    $('#upDateBtn' + AStuId).attr("onclick", "upDateAdmin(" + AId + "," + adminStu + "," + AStuId + ")")
+                } else {
+                    layer.msg("错误........")
+                }
+            });
+        }
 
-				//iframe层-父子操作
-				layer.open({
-					type: 2,
-					area: ['70%', '60%'],
-					fixed: false, //不固定
-					maxmin: true,
-					content: 'specifications_list.html'
-				});
-			});
+        //表单
+        layui.use('form', function () {
+            var form = layui.form;
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                var adminName = $('#adminName').val();
+                var adminStu = $('#adminStu').val();
+                // alert(adminStu+"     "+adminName);
+                if (adminName == undefined || adminName == '' && adminStu == '') {
+                    layer.msg("所有条件都为空....");
+                    return false;
+                }
+                $.post("/tableAdmin/conditionSearchAdmin", {
+                    "adminName": adminName,
+                    "adminStu": adminStu,
+                    "curr": 1
+                }, function (data) {
+                    if (data == null || data.length <= 0) {
+                        layer.msg("查找不存在.......");
+                        return false;
+                    }
+                    var total = data[0].total;
+                    // alert(total);
+                    setTable(data);
+                    layui.use('laypage', function () {
+                        var laypage = layui.laypage;
+                        laypage.render({
+                            elem: 'pages',
+                            count: total,
+                            limit: limit,
+                            layout: ['count', 'prev', 'page', 'next', 'skip'],
+                            jump: function (obj, first) {
+                                if (!first) {
+                                    var page = obj.curr;
+                                    $.post("/tableAdmin/conditionSearchAdmin", {
+                                        "adminName": adminName,
+                                        "adminStu": adminStu,
+                                        "curr": page
+                                    }, function (data) {
+                                        setTable(data);
+                                    });
 
-		}
+                                }
+                            }
+                        });
+                    });
+                })
+                return false;
+            });
+        });
 
-		//修改按钮
-		var updateFrame = null;
+        /**
+         * 分页
+         */
+        layui.use('laypage', function () {
+            var laypage = layui.laypage;
+            //总页数大于页码总数
+            laypage.render({
+                elem: 'pages',
+                count: total,
+                limit: limit,
+                layout: ['count', 'prev', 'page', 'next', 'skip'],
+                jump: function (obj, first) {
+                    if (!first) {
+                        //obj包含了当前分页的所有参数，比如：
+                        // console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                        // console.log(obj.limit); //得到每页显示的]条数
+                        var page = obj.curr;
+                        $.post("/tableAdmin/switchAdminNumber", {
+                            "curr": page
+                        }, function (data) {
+                            setTable(data);
+                        });
+                    }
+                }
+            });
+        });
 
-		function updateBut() {
-			layui.use('layer', function () {
-				var layer = layui.layer;
+        function setTable(data) {
+            var html = "";
+            if (data == null || data.length <= 0) {
+                layer.msg("错误....");
+                return;
+            }
 
-				//iframe层-父子操作
-				updateFrame = layer.open({
-					title: "商品信息修改",
-					type: 2,
-					area: ['70%', '60%'],
-					scrollbar: false, //默认：true,默认允许浏览器滚动，如果设定scrollbar: false，则屏蔽
-					maxmin: true,
-					content: 'goods_update.html'
-				});
-			});
-
-		}
-	</script>
+            for (var i = 0; i < data.length; i++) {
+                html += " <tr>\n" +
+                    "<td>" + data[i].aname + "</td>\n" +
+                    "<td><img src=\"" + data[i].aimg + "\"></td>\n" +
+                    "<td>\n" +
+                    "<div class=\"layui-input-inline\">\n" +
+                    "<label>\n" +
+                    "<select id=\"'adminStu'" + i + "\" lay-filter=\"adminStu\" name=\"adminStu\">\n";
+                if (data[i].astu == 0) {
+                    html += "<option value=\"0\" selected>超级管理员</option>\n" +
+                        "<option value=\"2\">用户管理员</option>\n" +
+                        "<option value=\"1\">资源管理员</option>\n" +
+                        "<option value=\"3\">离职</option>";
+                } else if (data[i].astu == 1) {
+                    html += "<option value=\"0\">超级管理员</option>\n" +
+                        "<option value=\"2\">用户管理员</option>\n" +
+                        "<option value=\"1\" selected>资源管理员</option>\n" +
+                        "<option value=\"3\">离职</option>";
+                } else if (data[i].astu == 2) {
+                    html += "<option value=\"0\">超级管理员</option>\n" +
+                        "<option value=\"2\" selected>用户管理员</option>\n" +
+                        "<option value=\"1\">资源管理员</option>\n" +
+                        "<option value=\"3\">离职</option>"
+                } else if (data[i].astu == 3) {
+                    html += "<option value=\"0\">超级管理员</option>\n" +
+                        "<option value=\"2\">用户管理员</option>\n" +
+                        "<option value=\"1\">资源管理员</option>\n" +
+                        "<option value=\"3\" selected>离职</option>"
+                }
+                html += "</select>\n" +
+                    "</label>\n" +
+                    "</div>\n" +
+                    "</td>\n" +
+                    "<td>\n" +
+                    "<button class=\"layui-btn layui-btn-xs\"\n" +
+                    "        onclick=\"upDateAdmin(" + data[i].aid + ',' + data[i].astu + ")\">修改\n" +
+                    "                </button>\n" +
+                    "            </td>\n" +
+                    "        </tr>";
+            }
+            document.getElementById("tbody").innerHTML = html;
+        }
+    </script>
 </div>
 
 </body>

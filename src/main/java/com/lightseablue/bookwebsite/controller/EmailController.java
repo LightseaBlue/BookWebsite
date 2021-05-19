@@ -4,9 +4,7 @@ import com.lightseablue.bookwebsite.entity.TableUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,11 +24,11 @@ public class EmailController {
 
     @PostMapping("/toAdmin")
     public Integer toAdmin(HttpServletRequest request, String topicVal, String detailVal) {
-
         SimpleMailMessage message = new SimpleMailMessage();
         TableUser user = (TableUser) request.getSession().getAttribute("user");
         message.setSubject(topicVal);
         message.setText("用户:" + user.getUName() + "对本站提出意见,请处理........\n" + detailVal);
+        //todo: 有问题应该是用户发给管理员
         message.setTo("1172893066@qq.com");
         message.setFrom("1172893066@qq.com");
         try {

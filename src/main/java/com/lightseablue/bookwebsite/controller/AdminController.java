@@ -2,9 +2,7 @@ package com.lightseablue.bookwebsite.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lightseablue.bookwebsite.dto.TableAudioNameDTO;
-import com.lightseablue.bookwebsite.entity.TableAllTypes;
-import com.lightseablue.bookwebsite.entity.TableAudioName;
-import com.lightseablue.bookwebsite.entity.TableAudioType;
+import com.lightseablue.bookwebsite.entity.*;
 import com.lightseablue.bookwebsite.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +25,6 @@ public class AdminController {
     @Resource
     TableUserService tableUserService;
     @Resource
-    TableAudioManagementService tableAudioManagementService;
-    @Resource
     TableAllTypesService tableAllTypesService;
     @Resource
     TableAudioTypeService tableAudioTypeService;
@@ -37,6 +33,12 @@ public class AdminController {
     @Resource
     TableAdminService tableAdminService;
 
+    /**
+     * 管理员主页
+     *
+     * @param request
+     * @return
+     */
     @RequestMapping("/Admin")
     private ModelAndView toAdmin(HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
@@ -49,6 +51,12 @@ public class AdminController {
         return modelAndView;
     }
 
+    /**
+     * 更新密码
+     *
+     * @param uId
+     * @return
+     */
     @GetMapping("/toUpdateAdminPwd")
     private ModelAndView toUpdateAdminPwd(String uId) {
         ModelAndView modelAndView = new ModelAndView();
@@ -57,17 +65,53 @@ public class AdminController {
         return modelAndView;
     }
 
+    /**
+     * 管理员登出
+     *
+     * @param request
+     * @return
+     */
     @GetMapping("/adminLogout")
     private String adminLogout(HttpServletRequest request) {
         request.getSession().removeAttribute("admin");
         return "back/AdminLogin";
     }
 
+    /**
+     * 跳转管理员管理
+     *
+     * @return
+     */
     @GetMapping("/toUpdateAdmin")
-    private String toUpdateAdmin() {
-        return "back/UpdateAdmin";
+    private ModelAndView toUpdateAdmin() {
+        Page<TableAdmin> tableAdmins = tableAdminService.getAdmins(1);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("admins", tableAdmins.getRecords());
+        modelAndView.addObject("total", tableAdmins.getTotal());
+        modelAndView.setViewName("back/UpdateAdmin");
+        return modelAndView;
     }
 
+    @GetMapping("/toAddAdmin")
+    private String toAddAdmin() {
+        return "back/addAdmin";
+    }
+
+    @GetMapping("/toUser")
+    private ModelAndView toUser() {
+        ModelAndView modelAndView = new ModelAndView();
+        Page<TableUser> pageUsers = tableUserService.getPageUsers(1L, null, null);
+        modelAndView.addObject("users", pageUsers.getRecords());
+        modelAndView.addObject("total", pageUsers.getTotal());
+        modelAndView.setViewName("back/UpdateUser");
+        return modelAndView;
+    }
+
+    /**
+     * 跳转图书管理
+     *
+     * @return
+     */
     @GetMapping("/toCommodity")
     private ModelAndView toCommodity() {
         ModelAndView modelAndView = new ModelAndView();

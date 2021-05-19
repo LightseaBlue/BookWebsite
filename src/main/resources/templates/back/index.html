@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:fragment="Head">
     <meta charset="utf-8">
     <!--   页面图标 -->
     <link rel="icon" th:href="@{images/favicon.ico}">
@@ -27,7 +27,7 @@
                     <dd><a th:href="|javascript:upDateAdminPwd(${session.admin.AId})|">修改密码</a></dd>
                 </dl>
             </li>
-            <li class="layui-nav-item"><a href="/adminLogout">Sign out</a></li>
+            <li class="layui-nav-item"><a href="/adminLogout">登出</a></li>
         </ul>
     </div>
 
@@ -35,16 +35,19 @@
         <div class="layui-side-scroll">
             <ul class="layui-nav layui-nav-tree" lay-filter="test">
                 <li class="layui-nav-item">
-                    <a href="javascript:toCommodity();">书籍管理</a>
+                    <a th:href="'javascript:toCommodity('+${session.admin.AStu}+')'">书籍管理</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a th:href="|javascript:toUser(${session.admin.AStu})|">用户管理</a>
                 </li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">管理员</a>
                     <dl class="layui-nav-child">
-                        <dd><a href="">查看管理</a></dd>
-                        <dd><a href="">添加授权</a></dd>
+                        <dd><a th:href="|javascript:toAdmin(${session.admin.AStu})|">查看管理</a></dd>
+                        <dd><a th:href="|javascript:upLoadAdmin(${session.admin.AStu})|">添加授权</a></dd>
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a href="/">用户端</a></li>
+                <li class="layui-nav-item"><a href="/" target="_blank">用户端</a></li>
             </ul>
 
         </div>
@@ -57,7 +60,7 @@
             欢迎管理员:[[${session.admin.AName}]]
             </span>
             <span style="margin-left: 30px"
-                  th:text="${session.admin.AStu eq 0}?'您的职位为:超级管理员':(${session.admin.AStu eq 1}?'您的职位为:音频管理员':'您的职位为:超级管理员')"></span>
+                  th:text="${session.admin.AStu eq 0}?'您的职位为:超级管理员':(${session.admin.AStu eq 1}?'您的职位为:资源管理员':'您的职位为:超级管理员')"></span>
         </div>
         <hr class="layui-border-red">
         <div class="con" style="width: 100%; height: 100%;">
@@ -83,7 +86,36 @@
         var element = layui.element();
     });
 
-    function toCommodity() {
+    function toUser(Astu) {
+        if (Astu == 2) {
+            layer.msg("您的权限不足.....");
+            return;
+        }
+        $('#modularpage').attr("src", "/toUser");
+    }
+
+    function toAdmin(Astu) {
+        if (Astu != 0) {
+            layer.msg("您的权限不足.....");
+            return;
+        }
+        $('#modularpage').attr("src", "/toUpdateAdmin");
+    }
+
+    function upLoadAdmin(Astu) {
+        if (Astu != 0) {
+            layer.msg("您的权限不足.....");
+            return;
+        }
+        $('#modularpage').attr("src", "/toAddAdmin");
+    }
+
+    function toCommodity(Astu) {
+        //todo: 这里校验权限应该后台校验
+        if (Astu == 2) {
+            layer.msg("您的权限不足.....");
+            return;
+        }
         $('#modularpage').attr("src", "/toCommodity");
     }
 

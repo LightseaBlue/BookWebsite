@@ -1,23 +1,24 @@
 package com.lightseablue.bookwebsite.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.ApiController;
-import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lightseablue.bookwebsite.dto.TableUserDTO;
 import com.lightseablue.bookwebsite.entity.TableUser;
 import com.lightseablue.bookwebsite.service.TableUserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,13 +38,49 @@ public class TableUserController extends ApiController {
     private TableUserService tableUserService;
 
     /**
+     * 管理员端管理用户分页查询
+     *
+     * @param curr
+     * @return
+     */
+    @PostMapping("/switchUserPage")
+    private List<TableUser> switchUserPage(Long curr) {
+        Page<TableUser> pageUsers = tableUserService.getPageUsers(curr, null, null);
+        return pageUsers.getRecords();
+    }
+
+    @PostMapping("/upDateUserStu")
+    private boolean upDateUserStu(Integer uId, Integer uStu) {
+        return tableUserService.upDateUserStu(uId, uStu);
+    }
+
+    @PostMapping("/conditionSwitchUserPage")
+    private List<TableUserDTO> conditionSwitchUserPage(Long curr, String uName, Integer uStu) {
+        if (curr == null) {
+            curr = 1L;
+        }
+        Page<TableUser> pageUsers = tableUserService.getPageUsers(curr, uName, uStu);
+        List<TableUserDTO> tableUserDTOS = new ArrayList<>();
+        if (pageUsers.getRecords() != null) {
+            TableUserDTO tableUserDTO = new TableUserDTO();
+            pageUsers.getRecords().forEach(source -> {
+                BeanUtils.copyProperties(source, tableUserDTO);
+                tableUserDTOS.add(tableUserDTO);
+            });
+            tableUserDTOS.get(0).setTotal(pageUsers.getTotal());
+        }
+
+        return tableUserDTOS;
+    }
+
+    /**
      * 更新信息
      *
      * @param file
      * @param tableUser
      * @return
      */
-    @PostMapping("upDateUserMes")
+    @PostMapping("/upDateUserMes")
     private String upDateUserMes(MultipartFile file, TableUser tableUser, HttpServletRequest request) {
         if (file != null && file.getSize() != 0) {
             String fileName = file.getOriginalFilename();
@@ -86,9 +123,10 @@ public class TableUserController extends ApiController {
      * @return
      */
     @PostMapping("/upDateEmail")
-    private String upDateEmail(TableUser tableUser) {
+    private String upDateEmail(HttpServletRequest request, TableUser tableUser) {
         boolean b = tableUserService.updateById(tableUser);
         if (b) {
+            request.getSession().setAttribute("user", tableUser);
             return tableUser.getUEmail();
         } else {
             return "2";

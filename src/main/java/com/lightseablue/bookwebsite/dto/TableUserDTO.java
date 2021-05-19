@@ -17,6 +17,8 @@ import com.lightseablue.bookwebsite.entity.TableUser;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(value = "table_user数据传输对象", description = "请求/响应参数")
 public class TableUserDTO extends TableUser {
-
     private static final long serialVersionUID = 6019054144879193181L;
+
+    //分页
+    private Long total;
 }

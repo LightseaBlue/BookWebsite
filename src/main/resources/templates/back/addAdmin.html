@@ -1,92 +1,94 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="back/index :: Head">
     <title></title>
-    <link href="layui/css/layui.css" rel="stylesheet">
-    <script src="layui/layui.js"></script>
 </head>
 <body>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>管理员添加</legend>
+</fieldset>
 <form action="" class="layui-form" id="addForm">
     <div class="layui-form-item">
-        <label class="layui-form-label">管理员名称</label>
-        <div class="layui-input-block">
-            <input autocomplete="off" class="layui-input" lay-verify="required" name="goodsName" required type="text">
+        <label class="layui-form-label">管理员名</label>
+        <div class="layui-input-block" style="margin-top: 9px">
+            <input autocomplete="off" class="layui-input" lay-verify="required" name="aName" style="margin-top: 9px"
+                   type="text">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">商品图片</label>
-        <div class="layui-upload-drag" id="goodsPic">
-            <i class="layui-icon"></i>
-            <p>点击上传，或将文件拖拽到此处</p>
+        <label class="layui-form-label">管理员图片</label>
+        <div class="layui-input-block">
+            <input id="adminImg" lay-verify="required" name="file" type="file">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">密码</label>
         <div class="layui-input-block">
-            <input autocomplete="off" class="layui-input" lay-verify="required" name="company" required type="text">
+            <input autocomplete="off" class="layui-input" id="pwd" lay-verify="required" name="pwd" required
+                   type="password">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">确认密码</label>
         <div class="layui-input-block">
-            <input autocomplete="off" class="layui-input" lay-verify="required|number" name="price" required
-                   type="text">
+            <input autocomplete="off" class="layui-input" id="aPwd" lay-verify="required" name="aPwd" required
+                   type="password">
         </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">管理员权限</label>
-            <div class="layui-input-inline">
-                <select id="provid" lay-filter="provid" name="provid">
-                    <option value="">请选择....</option>
-                </select>
-            </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">管理员权限</label>
+        <div class="layui-input-inline">
+            <select lay-filter="provid" lay-verify="required" name="aStu">
+                <option value="">请选择....</option>
+                <option value="0">超级管理员</option>
+                <option value="2">用户管理员</option>
+                <option value="1">资源管理员</option>
+            </select>
         </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">状态</label>
-            <div class="layui-input-block">
-                <input checked name="sex" title="正常" type="radio" value="nan">
-                <input name="sex" title="离职" type="radio" value="nv">
-            </div>
-        </div>
+    </div>
 
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <button class="layui-btn" lay-filter="submitBut" lay-submit>立即提交</button>
-                <button class="layui-btn layui-btn-primary" type="reset">重置</button>
-            </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-filter="submitBut" lay-submit>立即提交</button>
+            <button class="layui-btn layui-btn-primary" type="reset">重置</button>
         </div>
+    </div>
 </form>
 
 
 <script>
     layui.use(['upload', 'form'], function () {
         var form = layui.form;
-        var upload = layui.upload;
-        var layer = layui.layer;
         //监听提交
-        //解决了layui.open弹窗从内部关闭这个弹窗的问题
         form.on('submit(submitBut)', function (data) {
-            var updateFrame = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-            parent.layer.close(updateFrame);  //再改变当前层的标题
-        });
-        form.verify({
-            //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
-            ZHCheck: [
-                /^[\u0391-\uFFE5]+$/
-                , '只允许输入中文'
-            ]
-        });
-        //拖拽上传
-        upload.render({
-            elem: '#goodsPic',
-            url: '/upload/',
-            done: function (res) {
-                console.log(res)
+            var pwd = $('#pwd').val();
+            var aPwd = $('#aPwd').val();
+            if (pwd != aPwd) {
+                layer.msg("两次密码不一致....");
+                return;
             }
+            var addForm = new FormData(document.getElementById('addForm'));
+            $.ajax({
+                url: "/tableAdmin/addAdmin",
+                type: "post",
+                data: addForm,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    alert(data);
+                    if (data == false) {
+                        layer.msg("添加失败..");
+                    } else {
+                        layer.msg("添加成功..");
+                    }
+                },
+                error: function (e) {
+                    layer.msg("错误！！");
+                }
+            });
         });
     });
 </script>
 
-</div>
 </body>
 </html>
