@@ -45,16 +45,26 @@ public class TableAudioNameServiceImpl extends ServiceImpl<TableAudioNameDao, Ta
 
 
     @Override
+    public boolean updateAudioNameStuByUid(Integer uid, Integer audioStu) {
+        UpdateWrapper<TableAudioName> tableAudioNameUpdateWrapper = new UpdateWrapper<>();
+        tableAudioNameUpdateWrapper.lambda().eq(TableAudioName::getUId, uid)
+                .ne(TableAudioName::getAudioNameStatus, 3)
+                .set(TableAudioName::getAudioNameStatus, audioStu);
+        return this.update(tableAudioNameUpdateWrapper);
+    }
+
+    @Override
     public boolean updateClickThroughRateByAudioNameId(String audioNameId, Long num) {
         UpdateWrapper<TableAudioName> tableAudioNameUpdateWrapper = new UpdateWrapper<>();
-        tableAudioNameUpdateWrapper.lambda().eq(TableAudioName::getAudioNameId, audioNameId).set(TableAudioName::getAudioNameCount, num);
+        tableAudioNameUpdateWrapper.lambda().eq(TableAudioName::getAudioNameId, audioNameId)
+                .set(TableAudioName::getAudioNameCount, num);
         return this.update(tableAudioNameUpdateWrapper);
     }
 
     @Override
     public boolean updateByAudioNameId(String audioNameId) {
         UpdateWrapper<TableAudioName> tableAudioNameUpdateWrapper = new UpdateWrapper<>();
-        tableAudioNameUpdateWrapper.lambda().eq(TableAudioName::getAudioNameId, audioNameId).set(TableAudioName::getAudioNameStatus, 2);
+        tableAudioNameUpdateWrapper.lambda().eq(TableAudioName::getAudioNameId, audioNameId).set(TableAudioName::getAudioNameStatus, 3);
         return this.update(tableAudioNameUpdateWrapper);
     }
 

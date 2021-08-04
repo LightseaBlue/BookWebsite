@@ -19,11 +19,21 @@ import java.util.List;
  */
 public interface TableAudioNameService extends IService<TableAudioName> {
 
+    /**
+     * 根据用户更新书籍状态
+     *
+     * @param uid
+     * @param audioStu
+     * @return
+     */
+    boolean updateAudioNameStuByUid(Integer uid, Integer audioStu);
+
 
     /**
      * 根据主键更新点击量
      *
      * @param audioNameId
+     * @param num
      * @return
      */
     boolean updateClickThroughRateByAudioNameId(String audioNameId, Long num);

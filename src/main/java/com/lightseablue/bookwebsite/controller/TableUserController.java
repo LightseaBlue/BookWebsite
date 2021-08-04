@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.extension.api.ApiController;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lightseablue.bookwebsite.dto.TableUserDTO;
 import com.lightseablue.bookwebsite.entity.TableUser;
+import com.lightseablue.bookwebsite.service.TableAudioNameService;
 import com.lightseablue.bookwebsite.service.TableUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,8 +52,13 @@ public class TableUserController extends ApiController {
     }
 
     @PostMapping("/upDateUserStu")
-    private boolean upDateUserStu(Integer uId, Integer uStu) {
-        return tableUserService.upDateUserStu(uId, uStu);
+    private boolean upDateUserStu(Integer uId, Integer uStu) throws Exception {
+        try {
+            boolean upDateUserStu = tableUserService.upDateUserStu(uId, uStu);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     @PostMapping("/conditionSwitchUserPage")
@@ -126,7 +133,9 @@ public class TableUserController extends ApiController {
     private String upDateEmail(HttpServletRequest request, TableUser tableUser) {
         boolean b = tableUserService.updateById(tableUser);
         if (b) {
-            request.getSession().setAttribute("user", tableUser);
+            TableUser user = (TableUser) request.getSession().getAttribute("user");
+            user.setUEmail(tableUser.getUEmail());
+            request.getSession().setAttribute("user", user);
             return tableUser.getUEmail();
         } else {
             return "2";

@@ -39,12 +39,12 @@
         if (topicVal.trim() == '' || detailVal.trim() == '') {
             alert("请认真填写信息.....");
         } else {
+            alert("已发送给管理员..请稍后..");
             $.post("/toAdmin", {
                 'topicVal': topicVal,
                 'detailVal': detailVal
             }, function (data) {
                 if (data == 1) {
-                    alert("已发送给管理员..请稍后查看..");
                     window.location.href = "/";
                 } else {
                     alert("发送失败请稍后重试......");

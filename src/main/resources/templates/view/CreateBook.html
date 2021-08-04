@@ -5,7 +5,6 @@
 </head>
 <body>
 <div class="con_ny" id="bookLists">
-    ListeningBookWebsite
     <h4 class="con_dqwz">您的当前位置：<a href="/">首页</a> >>书籍创建</h4>
     <form id="form" method="post" role="form">
         <div style="margin-top: 20px">
@@ -18,7 +17,7 @@
                                                         onchange="createBookType(this.options[this.options.selectedIndex].value)"
                                                         style="border: 2px solid #d2d2d2; background-color: transparent; width: 162px">
             <option style="display: none">请选择.....</option>
-            <option th:each="item:${bigTypes}" th:text="${item.allTypeName}"
+            <option th:each="item:${session.bigTypes}" th:text="${item.allTypeName}"
                     th:value="${item.allTypeId}"></option>
         </select>
         </div>

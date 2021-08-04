@@ -60,8 +60,17 @@ public class IndexController {
         List<TableAudioNameDTO> youLikesOrTops;
         if (user != null) {
             youLikesOrTops = tableAudioNameService.getYouLike(user.getUId(), 1);
-            if (youLikesOrTops == null) {
+            if (youLikesOrTops == null || youLikesOrTops.size() == 0) {
                 youLikesOrTops = tableAudioNameService.findAllTopBook(1);
+            } else if (youLikesOrTops.size() < 3) {
+                int size = youLikesOrTops.size();
+                int temp = 0;
+                while (size < 3) {
+                    List<TableAudioNameDTO> allTopBook = tableAudioNameService.findAllTopBook(1);
+                    youLikesOrTops.add(allTopBook.get(temp));
+                    temp++;
+                    size++;
+                }
             }
         } else {
             youLikesOrTops = tableAudioNameService.findAllTopBook(1);
@@ -239,6 +248,7 @@ public class IndexController {
     @GetMapping("/createBook")
     public ModelAndView toCreateBook() {
         ModelAndView modelAndView = new ModelAndView();
+
         modelAndView.setViewName("view/CreateBook");
         return modelAndView;
     }

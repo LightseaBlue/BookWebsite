@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lightseablue.bookwebsite.dao.TableUserDao;
 import com.lightseablue.bookwebsite.entity.TableAdmin;
 import com.lightseablue.bookwebsite.entity.TableUser;
+import com.lightseablue.bookwebsite.service.TableAudioNameService;
 import com.lightseablue.bookwebsite.service.TableUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -23,12 +26,21 @@ import java.util.List;
 public class TableUserServiceImpl extends ServiceImpl<TableUserDao, TableUser> implements TableUserService {
     @Autowired
     TableUserDao tableUserDao;
+    @Resource
+    private TableAudioNameService tableAudioNameService;
 
     @Override
-    public boolean upDateUserStu(Integer uId, Integer uStu) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean upDateUserStu(Integer uId, Integer uStu) throws Exception {
         UpdateWrapper<TableUser> tableUserUpdateWrapper = new UpdateWrapper<>();
         tableUserUpdateWrapper.lambda().eq(TableUser::getUId, uId).set(TableUser::getUStu, uStu);
-        return this.update(tableUserUpdateWrapper);
+        boolean update = this.update(tableUserUpdateWrapper);
+        boolean updateAudioNameByUid = tableAudioNameService.updateAudioNameStuByUid(uId, uStu);
+        boolean b = update && updateAudioNameByUid;
+        if (!b) {
+            throw new Exception("回滚。。");
+        }
+        return true;
     }
 
     @Override

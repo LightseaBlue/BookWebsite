@@ -22,7 +22,7 @@ public interface TableUserService extends IService<TableUser> {
      * @param uStu
      * @return
      */
-    boolean upDateUserStu(Integer uId, Integer uStu);
+    boolean upDateUserStu(Integer uId, Integer uStu) throws Exception;
 
     /**
      * 根据用户名模糊查询  分页
