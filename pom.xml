@@ -12,7 +12,7 @@
     <artifactId>bookwebsite</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>bookwebsite</name>
-    <description>听书网站</description>
+    <description>听书网</description>
     <packaging>war</packaging>
 
     <properties>
